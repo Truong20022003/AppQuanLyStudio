@@ -39,7 +39,10 @@ const Man_cho = () => {
                 navigation.navigate("MH_dang_nhap");
               }}
             />
-            <Button_custom noidung="Đăng Ký" style={styles.buttom} />
+            <Button_custom noidung="Đăng Ký" style={styles.buttom}
+            onPress={() => {
+              navigation.navigate("MH_dang_ky");
+            }} />
           </View>
         </View>
       </ImageBackground>
