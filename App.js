@@ -321,7 +321,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Man_cho"
+        initialRouteName="Hoa_Don"
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="MenuDrawer" component={MenuDrawer} />
@@ -329,6 +329,7 @@ export default function App() {
         <Stack.Screen name="MH_dang_ky" component={MH_dang_ky} />
         <Stack.Screen name="Man_cho" component={Man_cho} />
         <Stack.Screen name="Chi_tiet_dich_vu" component={Chi_tiet_dich_vu} />
+        <Stack.Screen name="Hoa_Don" component={HoaDon} />
       </Stack.Navigator>
     </NavigationContainer>
   );
