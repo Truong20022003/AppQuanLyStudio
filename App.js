@@ -24,6 +24,8 @@ import MH_dang_nhap from "./ManHinh/dangNhap_manCho/MH_dang_nhap";
 import ThongKe from "./ManHinh/thongke/ThongKe";
 import Man_cho from "./ManHinh/dangNhap_manCho/Man_cho";
 import MH_dang_ky from "./ManHinh/dangKy/MH_dang_ky";
+import TrangChu from "./ManHinh/mh_TrangChu/TrangChu";
+import Chi_tiet_dich_vu from "./ManHinh/mh_TrangChu/Chi_tiet_dich_vu";
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +33,7 @@ export default function App() {
   const MenuDrawer = (props) => {
     return (
       <Drawer.Navigator
+        initialRouteName="TrangChu"
         drawerContent={(props) => {
           const [showdialog, setshowdialog] = useState(false);
           return (
@@ -287,6 +290,30 @@ export default function App() {
             },
           })}
         />
+        <Drawer.Screen
+          component={TrangChu}
+          name="Trang chủ"
+          options={({ focused, color }) => ({
+            headerShown: false,
+            drawerIcon: ({ focused, size }) => (
+              <Image
+                source={{
+                  uri: focused
+                    ? "https://img.icons8.com/?size=50&id=2797&format=png"
+                    : "https://img.icons8.com/?size=50&id=73&format=png",
+                }}
+                style={{
+                  width: size,
+                  height: size,
+                  tintColor: focused ? "#006666" : "black",
+                }}
+              />
+            ),
+            drawerLabelStyle: {
+              color: "black",
+            },
+          })}
+        />
       </Drawer.Navigator>
     );
   };
@@ -300,6 +327,7 @@ export default function App() {
         <Stack.Screen name="MH_dang_nhap" component={MH_dang_nhap} />
         <Stack.Screen name="MH_dang_ky" component={MH_dang_ky} />
         <Stack.Screen name="Man_cho" component={Man_cho} />
+        <Stack.Screen name="Chi_tiet_dich_vu" component={Chi_tiet_dich_vu} />
       </Stack.Navigator>
     </NavigationContainer>
   );
