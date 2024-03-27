@@ -33,6 +33,7 @@ export default function App() {
   const MenuDrawer = (props) => {
     return (
       <Drawer.Navigator
+        screenOptions={{ headerShown: false }}
         initialRouteName="TrangChu"
         drawerContent={(props) => {
           const [showdialog, setshowdialog] = useState(false);
@@ -152,6 +153,30 @@ export default function App() {
           );
         }}
       >
+        <Drawer.Screen
+          component={TrangChu}
+          name="Trang chủ"
+          options={({ focused, color }) => ({
+            headerShown: false,
+            drawerIcon: ({ focused, size }) => (
+              <Image
+                source={{
+                  uri: focused
+                    ? "https://img.icons8.com/?size=50&id=2797&format=png"
+                    : "https://img.icons8.com/?size=50&id=73&format=png",
+                }}
+                style={{
+                  width: size,
+                  height: size,
+                  tintColor: focused ? "#006666" : "black",
+                }}
+              />
+            ),
+            drawerLabelStyle: {
+              color: "black",
+            },
+          })}
+        />
         <Drawer.Screen
           component={KhachHang}
           name="Quản lý khách hàng"
@@ -277,30 +302,6 @@ export default function App() {
                   uri: focused
                     ? "https://img.icons8.com/?size=80&id=08s0lljR627H&format=png"
                     : "https://img.icons8.com/?size=80&id=R9JRk80Gstb8&format=png",
-                }}
-                style={{
-                  width: size,
-                  height: size,
-                  tintColor: focused ? "#006666" : "black",
-                }}
-              />
-            ),
-            drawerLabelStyle: {
-              color: "black",
-            },
-          })}
-        />
-        <Drawer.Screen
-          component={TrangChu}
-          name="Trang chủ"
-          options={({ focused, color }) => ({
-            headerShown: false,
-            drawerIcon: ({ focused, size }) => (
-              <Image
-                source={{
-                  uri: focused
-                    ? "https://img.icons8.com/?size=50&id=2797&format=png"
-                    : "https://img.icons8.com/?size=50&id=73&format=png",
                 }}
                 style={{
                   width: size,
