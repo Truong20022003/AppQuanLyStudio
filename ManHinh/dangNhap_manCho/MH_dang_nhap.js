@@ -12,50 +12,61 @@ import { imgbackgr } from "../../Image";
 import TextInputCustom from "../../Custom/Text_Input_custom";
 import Button_custom from "../../Custom/Button_custom";
 import { useNavigation } from "@react-navigation/native";
+import { API_URL, LOGIN } from "../../linkapi/diaChi_api";
 
 const MH_dang_nhap = () => {
   const navigation = useNavigation();
-  const [tenDangNhap, settenDangNhap] = useState("");
-  const [matKhau, setmatKhau] = useState("");
+  const [tentaikhoan, settentaikhoan] = useState("");
+  const [matkhau, setmatkhau] = useState("");
   //////
-  const [errortenDangNhap, seterrortenDangNhap] = useState("");
-  const [errormatKhau, seterrormatKhau] = useState("");
+  const [errortentaikhoan, seterrortentaikhoan] = useState("");
+  const [errormatkhau, seterrormatkhau] = useState("");
   //////
   const [checkbox, setcheckbox] = useState(false);
-  const handchecktenDangNhap = (text) => {
+  const handchecktentaikhoan = (text) => {
     if (text.trim() === "") {
-      seterrortenDangNhap("Bạn chưa nhập tên đăng nhập");
+      seterrortentaikhoan("Bạn chưa nhập tên đăng nhập");
     } else {
-      seterrortenDangNhap("");
+      seterrortentaikhoan("");
     }
-    settenDangNhap(text);
+    settentaikhoan(text);
   };
-  const handcheckMatKhau = (text) => {
+  const handcheckmatkhau = (text) => {
     if (text.trim() === "") {
-      seterrormatKhau("Bạn chưa nhập tên đăng nhập");
+      seterrormatkhau("Bạn chưa nhập mật khẩu");
     } else {
-      seterrormatKhau("");
+      seterrormatkhau("");
     }
-    setmatKhau(text);
+    setmatkhau(text);
   };
+
   const handleLogin = async () => {
+    if (tentaikhoan.trim() === "") {
+      seterrortentaikhoan("Bạn chưa nhập tên đăng nhập");
+      return;
+    }
+    if (matkhau.trim() === "") {
+      seterrormatkhau("Bạn chưa nhập mật khẩu");
+      return;
+    }
     try {
-      const response = await fetch("nhanvien/login", {
+      const response = await fetch(`${API_URL}${LOGIN}`, {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ tentaikhoan, matKhau }),
+        body: JSON.stringify({ tentaikhoan, matkhau }),
       });
       const data = await response.json();
       if (data.status === 200) {
-        // Đăng nhập thành công
-        // Lưu thông tin người dùng vào bộ nhớ hoặc AsyncStorage
         navigation.navigate("MenuDrawer"); // Điều hướng tới màn hình MenuDrawer
-      } else {
-        // Đăng nhập không thành công
-        Alert.alert("Thông báo", data.messenger);
+      } else if (data.status === 404) {
+        seterrortentaikhoan("Tài khoản không tồn tại");
+        console.log("sai tai khoan");
+      } else if (data.status === 401) {
+        seterrormatkhau("Sai mật khẩu");
+        console.log("sai mk");
       }
     } catch (error) {
       console.error("Lỗi:", error);
@@ -104,9 +115,9 @@ const MH_dang_nhap = () => {
           <TextInputCustom
             placeholder="Nhập tên đang nhập"
             style={styles.input}
-            error={errortenDangNhap}
-            value={tenDangNhap}
-            onChangeText={handchecktenDangNhap}
+            error={errortentaikhoan}
+            value={tentaikhoan}
+            onChangeText={handchecktentaikhoan}
             styleerror={styles.imageerr}
           />
           <Image
@@ -121,9 +132,9 @@ const MH_dang_nhap = () => {
           <TextInputCustom
             placeholder="Nhập mật khẩu"
             style={styles.input}
-            error={errormatKhau}
-            value={matKhau}
-            onChangeText={handcheckMatKhau}
+            error={errormatkhau}
+            value={matkhau}
+            onChangeText={handcheckmatkhau}
             styleerror={styles.imageerr}
           />
           <Image
