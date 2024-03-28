@@ -1,4 +1,4 @@
-export const API_URL = "http://192.168.1.10:3000/";
+export const API_URL = "http://172.20.10.12:3000";
 export const LOGIN = "nhanvien/login";
 export const REGISTER = "nhanvien/register";
 export const GET_LIST_DICH_VU = "dichvu/getListdichvu";
