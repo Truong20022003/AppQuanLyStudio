@@ -14,6 +14,7 @@ import { API_URL, GET_LIST_DICH_VU } from "../../linkapi/diaChi_api";
 import axios from "axios";
 import Item_dv_Duoc_Chon_nhieu from "./Item_dv_Duoc_Chon_nhieu";
 import Swiper from "react-native-swiper";
+import { get_DichVu } from "../../linkapi/api_dichvu";
 const Header = () => {
   const [clicktim, setclicktim] = useState(false);
   return (
@@ -90,7 +91,7 @@ const TrangChu = () => {
   ]);
   useEffect(() => {
     axios
-      .get(`${API_URL}${GET_LIST_DICH_VU}`)
+      .get(`${API_URL}${get_DichVu}`)
       .then((response) => {
         setDichVuList(response.data);
       })
