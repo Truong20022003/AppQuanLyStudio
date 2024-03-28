@@ -5,4 +5,7 @@ export default {
   tim: require("../assets/icons8-heart-50.png"),
   tim2: require("../assets/icons8-heart-48.png"),
   back: require("../assets/icons8-back-50.png"),
+  icondelete: require("../assets/delete.png"),
+  iconupdate: require("../assets/edit.png"),
+  iconadd: require("../assets/add.png"),
 };
