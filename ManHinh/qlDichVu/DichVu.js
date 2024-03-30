@@ -33,6 +33,7 @@ const DichVu = () => {
   const [errorTen, seterrorTen] = useState("");
   const [errorGia, seterrorGia] = useState("");
   const [errormoTa, seterrormoTa] = useState("");
+
   const pickImage = async () => {
     let kq = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
