@@ -18,6 +18,9 @@ const TextInputCustom = ({
   keyboardType,
   style,
   styleerror,
+  onContentSizeChange,
+  multiline,
+  onLayout,
 }) => {
   const [isclick, setisclick] = useState(false);
   const [hienmk, sethienmk] = useState(true);
@@ -50,6 +53,9 @@ const TextInputCustom = ({
         onFocus={handleFocus}
         keyboardType={keyboardType}
         secureTextEntry={handhienmk()} // Gọi handhienmk() để thiết lập secureTextEntry
+        onContentSizeChange={onContentSizeChange}
+        multiline={multiline}
+        onLayout={onLayout}
       />
       {error ? (
         <Image
