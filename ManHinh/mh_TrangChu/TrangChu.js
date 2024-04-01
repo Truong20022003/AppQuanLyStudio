@@ -6,6 +6,8 @@ import {
   FlatList,
   ScrollView,
   TouchableOpacity,
+  StatusBar,
+  RefreshControl,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { icon } from "../../Image";
@@ -66,7 +68,6 @@ const Header = () => {
 };
 ///////////////
 const TrangChu = () => {
-  const [dichVuList, setDichVuList] = useState([]);
   const [sildeshow, setsildeshow] = useState([
     {
       id: 1,
@@ -89,18 +90,39 @@ const TrangChu = () => {
       url: "https://nicolebridal.vn/wp-content/uploads/2018/10/nhung-mau-ao-cuoi-duoi-ca-dep-nhat-21.jpg",
     },
   ]);
-  useEffect(() => {
+  const [dichVuList, setDichVuList] = useState([]);
+  const [refreshing, setRefreshing] = useState(false); // State để theo dõi trạng thái của hoạt động tải lại
+
+  // Hàm để tải lại dữ liệu từ API
+  const fetchData = () => {
     axios
       .get(`${API_URL}${get_DichVu}`)
       .then((response) => {
         setDichVuList(response.data);
+        setRefreshing(false); // Kết thúc hoạt động tải lại khi dữ liệu đã được cập nhật
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+        setRefreshing(false); // Kết thúc hoạt động tải lại nếu có lỗi xảy ra
       });
+  };
+
+  useEffect(() => {
+    fetchData(); // Gọi hàm fetchData() khi component được mount lần đầu tiên
   }, []);
+
+  // Hàm xử lý sự kiện khi người dùng kích hoạt hoạt động tải lại
+  const handleRefresh = () => {
+    setRefreshing(true); // Bắt đầu hoạt động tải lại
+    fetchData(); // Gọi hàm fetchData() để tải lại dữ liệu từ API
+  };
   return (
     <View style={styles.container}>
+      <StatusBar
+        translucent
+        barStyle="dark-content"
+        backgroundColor="transparent"
+      />
       <View style={{ height: 400, position: "absolute", zIndex: -1 }}>
         <Swiper
           style={{ height: 400 }}
@@ -138,6 +160,9 @@ const TrangChu = () => {
       <View style={{ height: 350 }} />
       <View style={styles.congHinhVongCung}></View>
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
         style={{ zIndex: 1 }}
         showsVerticalScrollIndicator={false}
         overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
@@ -163,7 +188,7 @@ const TrangChu = () => {
               showsHorizontalScrollIndicator={false}
               overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
               overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
-              // keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item?._id}
               renderItem={({ item }) => {
                 return <Item_dv_Duoc_Chon_nhieu data={item} />;
               }}
@@ -176,7 +201,7 @@ const TrangChu = () => {
               showsHorizontalScrollIndicator={false}
               overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
               overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
-              // keyExtractor={(item) => item.id} // Sử dụng item.id hoặc một thuộc tính duy nhất khác nếu có
+              keyExtractor={(item) => item?._id} // Sử dụng item.id hoặc một thuộc tính duy nhất khác nếu có
               renderItem={({ item }) => {
                 return <Item_dv_Duoc_Chon_nhieu data={item} />;
               }}
