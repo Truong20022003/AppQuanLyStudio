@@ -12,6 +12,7 @@ import {
   TextInput,
   Switch,
 
+
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { API_URL } from "../../linkapi/diaChi_api";
@@ -20,6 +21,14 @@ import { icon } from "../../Image";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import { get_KhachHang } from "../../linkapi/api_khachhang";
+import { get_DichVu } from "../../linkapi/api_dichvu";
+import CheckBox from "@react-native-community/checkbox";
+import { post_HoaDonChiTiet } from "../../linkapi/api_hoadonchitiet";
+import dayjs from "dayjs";
+import DateTimePicker from "react-native-ui-datepicker";
+import DatePicker from "@dietime/react-native-date-picker";
+
+
 
 
 const HoaDon = () => {
@@ -30,9 +39,16 @@ const HoaDon = () => {
   const [khachHangList, setKhachHangList] = useState([]);
 
   const [ngaydathang, setngaydathang] = useState('');
+  // const [dateDatHang, setDateDatHang] = useState(dayjs())
+
   const [tongtien, settongtien] = useState(0);
+
   const [trangthai, settrangthai] = useState(false);
+
   const [ngaytrahang, setngaytrahang] = useState('');
+  // const [dateTraHang, setDateTraHang] = useState(dayjs())
+  // const [modalDate, setModalDate] = useState(false)
+
   const [idhoadon, setidhoadon] = useState('');
 
   const [modalthem, setmodalthem] = useState(false);
@@ -48,20 +64,59 @@ const HoaDon = () => {
   const [upngaytrahang, setupngaytrahang] = useState('');
 
 
-  // const fetchIdKhachHangList = () => {
-  //   fetch("http://192.168.0.104:3000/khachhang/getListkhachhang")
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       const idList = data.map(khachhang => khachhang._id); // Lấy danh sách ID từ dữ liệu khách hàng
-  //       setIdKhachHangList(idList);
-  //     })
-  //     .catch(error => console.error('Lỗi khi lấy list id', error));
+  const [dichVuList, setDichVuList] = useState([]);
+  const [selectedDichvu, setSelectedDichVu] = useState([]);
+
+  const [idDichVuChon, setIdDichVuChon] = useState('');
+  const [gia, setGia] = useState(0)
+
+ 
+  const [chosenDate, setChosenDate] = useState(new Date());
+  
+  // const handleConfirm = () => {
+  //   setChosenDate(dateDatHang);
+  //   setModalDate(false);
+  // };
+  
+  // const handleCancel = () => {
+  //   setDateDatHang(chosenDate);
+  //   setModalDate(false);
   // };
 
-  // useEffect(() => {
-  //   fetchIdKhachHangList(); // Gọi hàm lấy danh sách ID của khách hàng khi component được render
-  // }, []);
-  const fetchIdKhachHangList = () => {
+  const fetchDichVuList = () => {
+    fetch(`${API_URL}${get_DichVu}`)
+      .then(response => response.json())
+      .then(data => {
+        setDichVuList(data);
+      })
+      .catch(error => console.error('Lỗi khi lấy danh sách dịch vụ', error));
+  };
+
+  const toggleDichVuSelection = (DichVuId) => {
+    if (selectedDichvu.includes(DichVuId)) {
+      setSelectedDichVu(selectedDichvu.filter(id => id !== DichVuId));
+    } else {
+      setSelectedDichVu([...selectedDichvu, DichVuId]);
+    }
+  };
+
+
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+    selectedDichvu.forEach(dichVuId => {
+      const dichVu = dichVuList.find(dichVu => dichVu._id === dichVuId);
+      if (dichVu) {
+        totalPrice += dichVu.gia;
+      }
+    });
+    return totalPrice;
+  };
+  useEffect(() => {
+    settongtien(calculateTotalPrice());
+  }, [selectedDichvu]);
+
+
+  const fetchKhachHangList = () => {
     fetch(`${API_URL}${get_KhachHang}`)
       .then(response => response.json())
       .then(data => {
@@ -70,11 +125,13 @@ const HoaDon = () => {
       .catch(error => console.error('Lỗi khi lấy list khách hàng', error));
   };
   useEffect(() => {
-    fetchIdKhachHangList(); // Gọi hàm lấy danh sách ID của khách hàng khi component được render
+    fetchKhachHangList(); // Gọi hàm lấy danh sách ID của khách hàng khi component được render
+    fetchDichVuList();
   }, []);
 
   const handleItemPress = (idHoaDon) => {
     navigation.navigate('Hoa_Don_Chi_Tiet', { idHoaDon }); // Chuyển hướng và truyền tham số
+    console.log(idHoaDon)
   };
 
   const laydl = () => {
@@ -157,8 +214,38 @@ const HoaDon = () => {
     }
   };
 
+
+  const addHoaDonChiTiet = async (hoaDonId) => {
+    await Promise.all(
+      selectedDichvu.map(async (serviceId) => {
+        const service = dichVuList.find((dichvu) => dichvu._id === serviceId);
+        if (service) {
+          const hoaDonChiTietData = {
+            idhoadon: hoaDonId,
+            soluong: 1,
+            dongia: service.gia,
+            thanhtien: service.gia,
+            iddichvu: serviceId,
+          };
+  
+          await fetch(`${API_URL}${post_HoaDonChiTiet}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(hoaDonChiTietData),
+          });
+        }
+      })
+    );
+  };
+  
+
+
+
   const themdl = () => {
     const tongtienNumber = parseFloat(tongtien);
+
+    // setngaydathang(dateDatHang.toString())
+    // setngaytrahang(dateTraHang.toString())
     const formdata = {
       idkhachhang: idkhachhang,
       ngaydathang: ngaydathang,
@@ -184,7 +271,14 @@ const HoaDon = () => {
                 setngaytrahang('');
                 settongtien(0);
                 settrangthai(false);
-                setmodalthem(false)
+                setmodalthem(false);
+                const hoaDonId = data[data.length - 1]._id;
+              // Thêm các chi tiết hóa đơn cho các dịch vụ được chọn
+              addHoaDonChiTiet(hoaDonId);
+              //   for(let i = 0; i <= datas.length; i++){
+              //   // Thêm các chi tiết hóa đơn
+              //   addHoaDonChiTiet(datas[i]._id);
+              // }
               })
               .catch(err => console.log(err));
             setindex(datas.length);
@@ -207,7 +301,7 @@ const HoaDon = () => {
 
           style={styles.item}>
           <Text>Khách hàng: {item.idkhachhang}</Text>
-          <Text>Tên khách hàng: {tenKhachHang }</Text>
+          <Text>Tên khách hàng: {tenKhachHang}</Text>
           <Text>Ngày đặt hàng: {item.ngaydathang}</Text>
 
           <Text>Tổng tiền: {item.tongtien}</Text>
@@ -264,6 +358,7 @@ const HoaDon = () => {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Sửa thông tin hóa đơn</Text>
 
+
             <Picker
               style={{ height: 'auto' }}
               selectedValue={upidkhachhang}
@@ -306,6 +401,7 @@ const HoaDon = () => {
               onChangeText={text => setupngaytrahang(text)}
               placeholder="Ngày trả hàng"
             />
+
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity style={{
                 justifyContent: 'center',
@@ -371,12 +467,27 @@ const HoaDon = () => {
             }}>
             Thêm hóa đơn
           </Text>
-          {/* <TextInput
-            style={styles.input}
-            value={idkhachhang}
-            onChangeText={text => setidkhachhang(text)}
-            placeholder="ID khách hàng"
-          /> */}
+          <Text style={{
+              width: '100%',
+              color: 'aqua',
+              fontSize: 20,
+            }}>Chọn dịch vụ</Text>
+          <ScrollView style={{width: '100%',height: '30%'}}>
+            {dichVuList.map(dichVu => (
+            <View key={dichVu._id}>
+              <TouchableOpacity onPress={() => toggleDichVuSelection(dichVu._id)}>
+                <Text>{dichVu.ten}</Text>
+                <Text>{dichVu.gia}</Text>
+                <Switch
+                  value={selectedDichvu.includes(dichVu._id)}
+                  onValueChange={() => toggleDichVuSelection(dichVu._id)}
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
+          </ScrollView>
+          
+
           <Picker
             style={{ height: 'auto' }}
             selectedValue={idkhachhang}
@@ -391,18 +502,51 @@ const HoaDon = () => {
               />
             ))}
           </Picker>
-          <TextInput
+
+          {/* <TouchableOpacity onPress={() => setModalDate(true)}>
+        <Text>Chọn ngày đặt hàng</Text>
+      </TouchableOpacity> */}
+      
+      <Text>Ngày đặt hàng</Text>
+      <TextInput
             style={styles.input}
             value={ngaydathang}
             onChangeText={text => setngaydathang(text)}
-            placeholder="Ngày đặt hàng"
+            placeholder="Ngày trả hàng"
           />
-          <TextInput
-            style={styles.input}
-            value={tongtien.toString()}
-            onChangeText={text => settongtien(text)}
-            placeholder="Tổng tiền"
-          />
+      {/* <Modal
+        visible={modalDate}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalDate(false)}
+      >
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          <View style={{ backgroundColor: "#ffffff" }}>
+          <Text>Ngày đặt hàng</Text>
+         <DatePicker
+                value={dateDatHang}
+                onChange={(value) => setDateDatHang(value)}
+                format="yyyy-mm-dd"
+            />
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          <TouchableOpacity style={{width: '40%',height: 40}}  onPress={handleConfirm} >
+                  <Text>Chọn</Text>
+          </TouchableOpacity>
+              <TouchableOpacity style={{width: '40%',height: 40}} onPress={handleCancel} >
+                <Text>Hủy</Text>
+              </TouchableOpacity>
+          </View>
+          
+        </View>
+      </Modal> */}
+         
+
+      
+         
+     
+      
+          <Text>Tổng tiền: {tongtien.toString()}</Text>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text>{trangthai ? 'Đã thanh toán' : 'Chưa thanh toán'}</Text>
@@ -422,7 +566,7 @@ const HoaDon = () => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <TouchableOpacity
               onPress={() => {
-                themdl();
+                setmodalthem(false)
               }}
               style={{
                 justifyContent: 'center',
@@ -447,7 +591,7 @@ const HoaDon = () => {
                 width: '40%'
 
               }}>
-              <Text>Thêm</Text>
+              <Text>Tiếp theo</Text>
             </TouchableOpacity>
 
           </View>
@@ -526,6 +670,11 @@ const styles = StyleSheet.create({
   imgButtonThem: {
     height: 60,
     width: 60
+  },
+  dateTimePicker: {
+    width: 200,
+    height: 40,
+    marginBottom: 10,
   },
 
 });
