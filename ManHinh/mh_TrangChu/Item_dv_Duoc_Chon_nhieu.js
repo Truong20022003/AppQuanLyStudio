@@ -15,7 +15,7 @@ const Item_dv_Duoc_Chon_nhieu = (props) => {
   const navigation = useNavigation();
   const [clicktimitem, setclicktimitem] = useState(false);
   const { ten, trangthai, anh } = props.data;
-  const arrImages = anh[0].split(",");
+  // const arrImages = anh[0].split(",");
   return (
     <TouchableOpacity
       style={[styles.container, { margin: 10 }]}
@@ -23,10 +23,7 @@ const Item_dv_Duoc_Chon_nhieu = (props) => {
         navigation.navigate("Chi_tiet_dich_vu", { chuyenItem: props.data });
       }}
     >
-      <Image
-        source={{ uri: arrImages[0] }}
-        style={{ height: 200, width: 150 }}
-      />
+      <Image source={{ uri: anh[0] }} style={{ height: 200, width: 150 }} />
       <TouchableOpacity
         onPress={() => setclicktimitem(!clicktimitem)}
         style={{

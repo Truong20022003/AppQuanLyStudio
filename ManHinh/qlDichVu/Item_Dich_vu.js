@@ -36,7 +36,7 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
   const [errorGia, seterrorGia] = useState("");
   const [errorTrangThai, seterrorTrangThai] = useState(true);
   const [errormoTa, seterrormoTa] = useState("");
-  const arrImages = anh[0].split(",");
+
   const [upanh, setupanh] = useState([]);
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -48,7 +48,9 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
     });
 
     if (!result.cancelled) {
-      setupanh([...upanh, ...result.assets.map((asset) => asset.uri)]);
+      let selectedImages = result.assets.map((asset) => asset.uri);
+      // Thêm các ảnh đã chọn vào state anh
+      setupanh([...upanh, ...selectedImages]);
     }
   };
   const handcheckupTen = (text) => {
@@ -87,32 +89,60 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
     }
   };
   const CapNhatItem = async () => {
-    try {
-      // Kiểm tra nếu giá không phải là một số hoặc nhỏ hơn hoặc bằng 0
-      if (isNaN(upGia) || upGia <= 0) {
-        seterrorGia("Giá phải là số và giá lớn hơn 0");
-        return; // Dừng thực thi nếu giá không hợp lệ
-      }
+    if (upTen.trim() === "") {
+      seterrorTen("Bạn chưa nhập tên");
+      return;
+    }
 
-      const response = await axios.put(`${API_URL}${put_DichVu}${_id}`, {
-        ten: upTen,
-        gia: parseFloat(upGia),
-        trangthai: upTrangThai,
-        mota: upmoTa,
-        anh: upanh, // Bạn có thể cập nhật ảnh tùy theo logic của bạn
+    if (isNaN(upGia) || upGia <= 0) {
+      seterrorGia("Giá phải là số và giá lớn hơn 0");
+      return; // Dừng thực thi nếu giá không hợp lệ
+    }
+    if (upmoTa.trim() === "") {
+      seterrormoTa("Bạn chưa nhập mô tả ");
+      return;
+    }
+    if (upanh.length === 0) {
+      ToastAndroid.show("Vui lòng chọn ảnh trước", ToastAndroid.SHORT);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("ten", upTen);
+    formData.append("gia", upGia);
+    formData.append("trangthai", upTrangThai);
+    formData.append("mota", upmoTa);
+    upanh.forEach((image, index) => {
+      formData.append("anh", {
+        uri: image,
+        type: "image/jpeg", // hoặc 'image/png'
+        name: `photo_${index}.jpg`,
       });
-      console.log(response.data);
-      setshowModalSua(false); // Đóng modal sau khi sửa thành công
-      capNhat_DS(); // Cập nhật danh sách sau khi sửa
-      setupTen("");
-      setupGia(0);
-      setupTrangThai("");
-      setupmoTa("");
-      setupanh([]);
-      ToastAndroid.show("Cập nhật thành công", ToastAndroid.SHORT);
+    });
+
+    try {
+      let res = await axios.put(`${API_URL}${put_DichVu}${_id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      let responseJson = res.data;
+      console.log(responseJson, "result");
+      if (responseJson.status === 200) {
+        ToastAndroid.show("Tải lên thành công", ToastAndroid.SHORT);
+        setshowModalSua(!showModalSua);
+        capNhat_DS();
+        setupTen("");
+        setupGia(0);
+        setupTrangThai(true);
+        setupmoTa("");
+        setupanh([]);
+      } else {
+        ToastAndroid.show("Sửa thành công", ToastAndroid.SHORT);
+      }
     } catch (error) {
-      console.error("Lỗi khi cập nhật mục:", error);
-      Alert.alert("Lỗi", "Không thể cập nhật mục. Vui lòng thử lại sau.");
+      console.error("Lỗi khi thêm mục:", error);
+      alert("Lỗi khi tải lên mục. Vui lòng thử lại sau.");
     }
   };
   const renderRightActions = (progress, dragX) => {
@@ -170,12 +200,10 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
   return (
     <Swipeable renderRightActions={renderRightActions}>
       <View style={[styles.container]}>
-        {arrImages.length > 0 && (
-          <Image
-            source={{ uri: arrImages[0] }}
-            style={[xemThem ? styles.image2 : styles.image]}
-          />
-        )}
+        <Image
+          source={{ uri: anh[1] }}
+          style={[xemThem ? styles.image2 : styles.image]}
+        />
         <View style={styles.info}>
           <Text style={styles.title} numberOfLines={xemThem ? undefined : 1}>
             Tên dịch vụ: {ten}
@@ -372,7 +400,7 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
                   marginBottom: 10,
                 }}
                 onPress={pickImage}
-                disabled
+                // disabled
               >
                 <Text
                   style={{
@@ -386,7 +414,7 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
               </TouchableOpacity>
               <FlatList
                 horizontal
-                data={arrImages}
+                data={upanh}
                 overScrollMode="never"
                 overScrollColor="transparent"
                 keyExtractor={(item, index) => index.toString()}

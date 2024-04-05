@@ -9,6 +9,7 @@ import {
   Modal,
   ToastAndroid,
   ScrollView,
+  Platform,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -21,9 +22,11 @@ import Item_Dich_vu from "./Item_Dich_vu";
 import TextInputCustom from "../../Custom/Text_Input_custom";
 import Button_custom from "../../Custom/Button_custom";
 import * as ImagePicker from "expo-image-picker";
-import { get_DichVu, post_DichVu } from "../../linkapi/api_dichvu";
+import { get_DichVu, post_DichVu, put_DichVu } from "../../linkapi/api_dichvu";
 import { RefreshControl } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
 const DichVu = () => {
+  const navigation = useNavigation();
   const [listDichVu, setlistDichVu] = useState([]);
   const [showModalThem, setshowModalThem] = useState(false);
   const [refreshing, setRefreshing] = useState(false); // State để theo dõi trạng thái của hoạt động tải lại
@@ -46,7 +49,9 @@ const DichVu = () => {
     });
 
     if (!result.cancelled) {
-      setanh([...anh, ...result.assets.map((asset) => asset.uri)]);
+      let selectedImages = result.assets.map((asset) => asset.uri);
+      // Thêm các ảnh đã chọn vào state anh
+      setanh([...anh, ...selectedImages]);
     }
   };
   const handcheckTen = (text) => {
@@ -92,34 +97,60 @@ const DichVu = () => {
     capNhat_DS(); // Gọi hàm fetchData() để tải lại dữ liệu từ API
   };
   const ThemItem = async () => {
-    try {
-      if (isNaN(Gia) || Gia <= 0) {
-        seterrorGia("Giá phải là số và giá lớn hơn 0");
-        return;
-      }
-      if (anh.length === 0) {
-        ToastAndroid.show("Bạn chưa chọn ảnh", ToastAndroid.SHORT);
-        return;
-      }
-      const response = await axios.post(`${API_URL}${post_DichVu}`, {
-        ten: Ten,
-        gia: parseFloat(Gia),
-        trangthai: TrangThai,
-        mota: moTa,
-        anh: anh, // Gửi mảng đường dẫn ảnh lên server
+    if (Ten.trim() === "") {
+      seterrorTen("Bạn chưa nhập tên");
+      return;
+    }
+
+    if (isNaN(Gia) || Gia <= 0) {
+      seterrorGia("Giá phải là số và giá lớn hơn 0");
+      return; // Dừng thực thi nếu giá không hợp lệ
+    }
+    if (moTa.trim() === "") {
+      seterrormoTa("Bạn chưa nhập mô tả ");
+      return;
+    }
+    if (anh.length === 0) {
+      ToastAndroid.show("Vui lòng chọn ảnh trước", ToastAndroid.SHORT);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("ten", Ten);
+    formData.append("gia", Gia);
+    formData.append("trangthai", TrangThai);
+    formData.append("mota", moTa);
+    anh.forEach((image, index) => {
+      formData.append("anh", {
+        uri: image,
+        type: "image/jpeg", // hoặc 'image/png'
+        name: `photo_${index}.jpg`,
       });
-      console.log(response.data);
-      setshowModalThem(false);
-      capNhat_DS();
-      setTen("");
-      setGia(0);
-      setTrangThai(true);
-      setmoTa("");
-      setanh([]);
-      ToastAndroid.show("Thêmthành công", ToastAndroid.SHORT);
+    });
+
+    try {
+      let res = await axios.post(`${API_URL}${post_DichVu}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      let responseJson = res.data;
+      console.log(responseJson, "result");
+      if (responseJson.status === 200) {
+        alert("Tải lên thành công");
+        setshowModalThem(false);
+        capNhat_DS();
+        setTen("");
+        setGia(0);
+        setTrangThai(true);
+        setmoTa("");
+        setanh([]);
+      } else {
+        ToastAndroid.show("Thêm thành công", ToastAndroid.SHORT);
+      }
     } catch (error) {
       console.error("Lỗi khi thêm mục:", error);
-      Alert.alert("Lỗi", "Không thể thêm mục. Vui lòng thử lại sau.");
+      alert("Lỗi khi tải lên mục. Vui lòng thử lại sau.");
     }
   };
 
@@ -130,8 +161,25 @@ const DichVu = () => {
         barStyle="dark-content"
         backgroundColor="transparent"
       />
-      <View style={[styles.fle_ngang, { top: 10, marginBottom: 20 }]}>
-        <Text style={[styles.theText, { width: "80%" }]}>Quản lý dịch vụ</Text>
+      <View
+        style={[
+          styles.fle_ngang,
+          { top: 10, marginBottom: 20, flexWrap: "wrap" },
+        ]}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.openDrawer();
+          }}
+        >
+          <Image
+            source={{
+              uri: "https://img.icons8.com/?size=30&id=59832&format=png",
+            }}
+            style={{ height: 45, width: 40, marginStart: 20 }}
+          />
+        </TouchableOpacity>
+        <Text style={[styles.theText, { width: "60%" }]}>Quản lý dịch vụ</Text>
         <TouchableOpacity
           onPress={() => setshowModalThem(!showModalThem)}
           style={[
@@ -157,7 +205,7 @@ const DichVu = () => {
         overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
         overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
         data={listDichVu}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item) => item._id.toString()}
         renderItem={({ item }) => {
           return <Item_Dich_vu data={item} capNhat_DS={() => capNhat_DS()} />;
         }}
