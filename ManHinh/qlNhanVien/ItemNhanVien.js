@@ -26,6 +26,8 @@ const ItemNhanVien = (navigation) => {
   const [loaiTaiKhoanUp, setLoaiTaiKhoanUp] = useState(0);
   const [anhUp, setAnhUp] = useState('');
   const [trangThaiUp, settrangThaiUp] = useState(0);
+
+  
   const renderRightActions = (progress, dragX) => {
     return (
       <View style={styles.rightActions}>
@@ -83,7 +85,7 @@ const ItemNhanVien = (navigation) => {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} >
-
+          
         </TouchableOpacity>
       </View>
     </View>

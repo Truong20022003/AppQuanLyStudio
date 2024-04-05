@@ -169,6 +169,7 @@ const TrangChu = () => {
         >
           {sildeshow.map((item) => (
             <Image
+            key={item.id}
               source={{ uri: item.url }}
               style={{
                 width: "100%",
