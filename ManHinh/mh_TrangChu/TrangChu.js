@@ -123,6 +123,30 @@ const TrangChu = () => {
         barStyle="dark-content"
         backgroundColor="transparent"
       />
+      <TouchableOpacity
+        onPress={() => {
+          ////profile ở đây
+        }}
+        style={{
+          position: "absolute",
+          end: 10,
+          top: 25,
+          borderRadius: 50,
+        }}
+      >
+        <Image
+          source={{
+            uri: "https://th.bing.com/th/id/OIP.cttlm1zICNEvRj_evxyP3wHaLH?w=202&h=303&c=7&r=0&o=5&pid=1.7",
+          }}
+          style={{
+            height: 50,
+            width: 50,
+            resizeMode: "stretch",
+            borderRadius: 50,
+          }}
+        />
+      </TouchableOpacity>
+
       <View style={{ height: 400, position: "absolute", zIndex: -1 }}>
         <Swiper
           style={{ height: 400 }}
@@ -188,7 +212,7 @@ const TrangChu = () => {
               showsHorizontalScrollIndicator={false}
               overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
               overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
-              keyExtractor={(item) => item?._id}
+              keyExtractor={(item) => item._id.toString()}
               renderItem={({ item }) => {
                 return <Item_dv_Duoc_Chon_nhieu data={item} />;
               }}
@@ -201,7 +225,7 @@ const TrangChu = () => {
               showsHorizontalScrollIndicator={false}
               overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
               overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
-              keyExtractor={(item) => item?._id} // Sử dụng item.id hoặc một thuộc tính duy nhất khác nếu có
+              keyExtractor={(item) => item._id.toString()} // Sử dụng item.id hoặc một thuộc tính duy nhất khác nếu có
               renderItem={({ item }) => {
                 return <Item_dv_Duoc_Chon_nhieu data={item} />;
               }}

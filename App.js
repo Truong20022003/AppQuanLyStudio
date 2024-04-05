@@ -322,7 +322,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Hoa_Don"
+        initialRouteName="MenuDrawer"
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="MenuDrawer" component={MenuDrawer} />

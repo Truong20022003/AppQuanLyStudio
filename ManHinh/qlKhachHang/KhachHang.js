@@ -21,8 +21,10 @@ import { get_DichVu } from "../../linkapi/api_dichvu";
 import { get_NhanVien } from "../../linkapi/api_nhanvien";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
+import { useNavigation } from "@react-navigation/native";
 
 const KhachHang = () => {
+  const navigation = useNavigation();
   const [listKhachHang, setlistKhachHang] = useState([]);
   const [nhanvienList, setNhanvienList] = useState([]);
   const [showModalThem, setshowModalThem] = useState(false);
@@ -170,10 +172,8 @@ const KhachHang = () => {
   }, []);
 
   const ThemItem = async () => {
-    
     try {
-      
-    console.log("add")
+      console.log("add");
       // Kiểm tra xem có trường nào bị bỏ trống không
       // if (!idnhanvien.trim()) {
       //   seterrorIdnhanvien("Không được để trống");
@@ -247,7 +247,19 @@ const KhachHang = () => {
         backgroundColor="transparent"
       />
       <View style={[styles.fle_ngang, { top: 10, marginBottom: 20 }]}>
-        <Text style={[styles.theText, { width: "80%" }]}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.openDrawer();
+          }}
+        >
+          <Image
+            source={{
+              uri: "https://img.icons8.com/?size=30&id=59832&format=png",
+            }}
+            style={{ height: 45, width: 40, marginStart: 20 }}
+          />
+        </TouchableOpacity>
+        <Text style={[styles.theText, { width: "60%" }]}>
           Quản lý khách hàng
         </Text>
         <TouchableOpacity
@@ -272,6 +284,7 @@ const KhachHang = () => {
         overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
         overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
         data={listKhachHang}
+        keyExtractor={(item) => item._id.toString()}
         renderItem={({ item }) => {
           return (
             <Item_Khach_hang data={item} capNhat_DS={() => capNhat_DS()} />
@@ -304,255 +317,255 @@ const KhachHang = () => {
           }}
           style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.2)" }}
         />
-        
-          <View
-            style={{
-              height: "auto",
-              justifyContent: "flex-end",
-              backgroundColor: "white",
-              paddingHorizontal: 10,
-              paddingVertical: 20,
-            }}
-          >
-            <View>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setshowModalThem(false);
-                  }}
-                >
-                  <Image
-                    style={{ width: 30, height: 30 }}
-                    source={{
-                      uri: "https://cdn0.iconfinder.com/data/icons/octicons/1024/x-512.png",
-                    }}
-                  />
-                </TouchableOpacity>
-                <Text style={[styles.theText,{left:80}]}>Thêm Khách hàng</Text>
-              </View>
-              {/* 0 */}
-              <View
-                style={[
-                  styles.cuc1,
-                  { height: 80, justifyContent: "space-between" },
-                ]}
-              >
-                <Text
-                  style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
-                >
-                  ID nhân viên:
-                </Text>
-                <Picker
-                  style={{ height: "auto" }}
-                  selectedValue={idnhanvien}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setIdnhanvien(itemValue)
-                  }
-                >
-                  {nhanvienList.map((nhanvien) => (
-                    <Picker.Item
-                      key={nhanvien._id}
-                      label={`${nhanvien.hoten}`}
-                      value={nhanvien._id}
-                    />
-                  ))}
-                </Picker>
-              </View>
-              {/* chon anh */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-evenly",
+
+        <View
+          style={{
+            height: "auto",
+            justifyContent: "flex-end",
+            backgroundColor: "white",
+            paddingHorizontal: 10,
+            paddingVertical: 20,
+          }}
+        >
+          <View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setshowModalThem(false);
                 }}
               >
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "green",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: 10,
-                    borderRadius: 10,
-                    top: 30,
-                    width: "20%",
-                  }}
-                  onPress={pickImage}
-                >
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      color: "white",
-                      fontSize: 13,
-                    }}
-                  >
-                    Chọn ảnh
-                  </Text>
-                </TouchableOpacity>
-
                 <Image
-                  source={{ uri: anh }}
-                  style={{
-                    height: 80,
-                    width: 80,
-                    backgroundColor: "red",
-                    resizeMode: "stretch",
+                  style={{ width: 30, height: 30 }}
+                  source={{
+                    uri: "https://cdn0.iconfinder.com/data/icons/octicons/1024/x-512.png",
                   }}
                 />
-              </View>
-              {/* 1 */}
-              <View
-                style={[
-                  styles.cuc1,
-                  { height: 80, justifyContent: "space-between" },
-                ]}
+              </TouchableOpacity>
+              <Text style={[styles.theText, { left: 80 }]}>
+                Thêm Khách hàng
+              </Text>
+            </View>
+            {/* 0 */}
+            <View
+              style={[
+                styles.cuc1,
+                { height: 80, justifyContent: "space-between" },
+              ]}
+            >
+              <Text
+                style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
+              >
+                ID nhân viên:
+              </Text>
+              <Picker
+                style={{ height: "auto" }}
+                selectedValue={idnhanvien}
+                onValueChange={(itemValue, itemIndex) =>
+                  setIdnhanvien(itemValue)
+                }
+              >
+                {nhanvienList.map((nhanvien) => (
+                  <Picker.Item
+                    key={nhanvien._id}
+                    label={`${nhanvien.hoten}`}
+                    value={nhanvien._id}
+                  />
+                ))}
+              </Picker>
+            </View>
+            {/* chon anh */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-evenly",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "green",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 10,
+                  borderRadius: 10,
+                  top: 30,
+                  width: "20%",
+                }}
+                onPress={pickImage}
               >
                 <Text
-                  style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
+                  style={{
+                    textAlign: "center",
+                    color: "white",
+                    fontSize: 13,
+                  }}
                 >
-                  Họ tên:
+                  Chọn ảnh
                 </Text>
-                <TextInputCustom
-                  placeholder="Nhập họ tên"
-                  onChangeText={handcheckHoten}
-                  error={errorhoten}
-                  style={styles.inputcustom}
-                />
-              </View>
-              {/* 2 */}
-              <View
-                style={[
-                  styles.cuc1,
-                  { height: 80, justifyContent: "space-between" },
-                ]}
-              >
-                <Text
-                  style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
-                >
-                  Số điện thoại:
-                </Text>
-                <TextInputCustom
-                  placeholder="Nhập số điện thoại"
-                  onChangeText={handcheckSdt}
-                  error={errorsdt}
-                  style={styles.inputcustom}
-                />
-              </View>
-              {/* 3 */}
-              <View
-                style={[
-                  styles.cuc1,
-                  { height: 80, justifyContent: "space-between" },
-                ]}
-              >
-                <Text
-                  style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
-                >
-                  Địa chỉ:
-                </Text>
-                <TextInputCustom
-                  placeholder="Nhập địa chỉ"
-                  onChangeText={handcheckDiachi}
-                  error={errordiachi}
-                  style={styles.inputcustom}
-                />
-              </View>
-              {/* 4 */}
-              <View
-                style={[
-                  styles.cuc1,
-                  { height: 80, justifyContent: "space-between" },
-                ]}
-              >
-                <Text
-                  style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
-                >
-                  Email:
-                </Text>
-                <TextInputCustom
-                  placeholder="Nhập email"
-                  onChangeText={handcheckEmail}
-                  error={erroremail}
-                  style={styles.inputcustom}
-                />
-              </View>
-              {/* 5 */}
-              <View
-                style={[
-                  styles.cuc1,
-                  { height: 150, justifyContent: "space-between" },
-                ]}
-              >
-                <Text
-                  style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
-                >
-                  Danh sách dịch vụ:
-                </Text>
-                <ScrollView
-                style={{height:150}}
-                  showsVerticalScrollIndicator={false}
-                  overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
-                  overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
-                >
-                  {danhSachDichVu.map((dichvu) => (
-                    <TouchableOpacity
-                      key={dichvu._id}
-                      onPress={() => toggleSelection(dichvu._id)}
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <View
-                        style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: 12,
-                          borderWidth: 1,
-                          borderColor: selectedItems.includes(dichvu._id)
-                            ? "blue"
-                            : "#999",
-                          marginRight: 10,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        {selectedItems.includes(dichvu._id) && (
-                          <View
-                            style={{
-                              width: 12,
-                              height: 12,
-                              borderRadius: 6,
-                              backgroundColor: "blue",
-                            }}
-                          />
-                        )}
-                      </View>
-                      <Text style={{ marginRight: 10 }}>
-                        Tên: {dichvu.ten}, ID: {dichvu._id}
-                      </Text>
-                      {/* Hiển thị tên của dịch vụ bên cạnh nút checkbox */}
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-              {/* <Text style={{width:100, height:105}}></Text> */}
-              <Button_custom
-                noidung="Thêm"
-                onPress={() => {
-                  // console.log("hello");
-                  ThemItem();
-                  // console.log(
-                  //   idnhanvien,
-                  //   anh,
-                  //   hoten,
-                  //   sdt,
-                  //   diachi,
-                  //   email,
-                  //   dsdichvu
-                  // );
+              </TouchableOpacity>
+
+              <Image
+                source={{ uri: anh }}
+                style={{
+                  height: 80,
+                  width: 80,
+                  backgroundColor: "red",
+                  resizeMode: "stretch",
                 }}
               />
-              
             </View>
+            {/* 1 */}
+            <View
+              style={[
+                styles.cuc1,
+                { height: 80, justifyContent: "space-between" },
+              ]}
+            >
+              <Text
+                style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
+              >
+                Họ tên:
+              </Text>
+              <TextInputCustom
+                placeholder="Nhập họ tên"
+                onChangeText={handcheckHoten}
+                error={errorhoten}
+                style={styles.inputcustom}
+              />
+            </View>
+            {/* 2 */}
+            <View
+              style={[
+                styles.cuc1,
+                { height: 80, justifyContent: "space-between" },
+              ]}
+            >
+              <Text
+                style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
+              >
+                Số điện thoại:
+              </Text>
+              <TextInputCustom
+                placeholder="Nhập số điện thoại"
+                onChangeText={handcheckSdt}
+                error={errorsdt}
+                style={styles.inputcustom}
+              />
+            </View>
+            {/* 3 */}
+            <View
+              style={[
+                styles.cuc1,
+                { height: 80, justifyContent: "space-between" },
+              ]}
+            >
+              <Text
+                style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
+              >
+                Địa chỉ:
+              </Text>
+              <TextInputCustom
+                placeholder="Nhập địa chỉ"
+                onChangeText={handcheckDiachi}
+                error={errordiachi}
+                style={styles.inputcustom}
+              />
+            </View>
+            {/* 4 */}
+            <View
+              style={[
+                styles.cuc1,
+                { height: 80, justifyContent: "space-between" },
+              ]}
+            >
+              <Text
+                style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
+              >
+                Email:
+              </Text>
+              <TextInputCustom
+                placeholder="Nhập email"
+                onChangeText={handcheckEmail}
+                error={erroremail}
+                style={styles.inputcustom}
+              />
+            </View>
+            {/* 5 */}
+            <View
+              style={[
+                styles.cuc1,
+                { height: 150, justifyContent: "space-between" },
+              ]}
+            >
+              <Text
+                style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
+              >
+                Danh sách dịch vụ:
+              </Text>
+              <ScrollView
+                style={{ height: 150 }}
+                showsVerticalScrollIndicator={false}
+                overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
+                overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
+              >
+                {danhSachDichVu.map((dichvu) => (
+                  <TouchableOpacity
+                    key={dichvu._id}
+                    onPress={() => toggleSelection(dichvu._id)}
+                    style={{ flexDirection: "row", alignItems: "center" }}
+                  >
+                    <View
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: 12,
+                        borderWidth: 1,
+                        borderColor: selectedItems.includes(dichvu._id)
+                          ? "blue"
+                          : "#999",
+                        marginRight: 10,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      {selectedItems.includes(dichvu._id) && (
+                        <View
+                          style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 6,
+                            backgroundColor: "blue",
+                          }}
+                        />
+                      )}
+                    </View>
+                    <Text style={{ marginRight: 10 }}>
+                      Tên: {dichvu.ten}, ID: {dichvu._id}
+                    </Text>
+                    {/* Hiển thị tên của dịch vụ bên cạnh nút checkbox */}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+            {/* <Text style={{width:100, height:105}}></Text> */}
+            <Button_custom
+              noidung="Thêm"
+              onPress={() => {
+                // console.log("hello");
+                ThemItem();
+                // console.log(
+                //   idnhanvien,
+                //   anh,
+                //   hoten,
+                //   sdt,
+                //   diachi,
+                //   email,
+                //   dsdichvu
+                // );
+              }}
+            />
           </View>
-        
+        </View>
       </Modal>
     </View>
   );

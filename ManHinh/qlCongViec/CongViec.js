@@ -18,8 +18,10 @@ import Button_custom from "../../Custom/Button_custom";
 import TextInputCustom from "../../Custom/Text_Input_custom";
 import { get_NhanVien } from "../../linkapi/api_nhanvien";
 import { Picker } from "@react-native-picker/picker";
+import { useNavigation } from "@react-navigation/native";
 
 const CongViec = () => {
+  const navigation = useNavigation();
   const [listCongViec, setlistCongViec] = useState([]);
   const [IDnhanvienList, setIDnhanvienList] = useState([]);
   const [tencongviec, setTencongviec] = useState("");
@@ -45,7 +47,7 @@ const CongViec = () => {
     }
     setTencongviec(text);
   };
-  
+
   const handcheckNgaybatdau = (text) => {
     if (text.trim() === "") {
       seterrorNgaybatdau("Không được để trống");
@@ -162,8 +164,25 @@ const CongViec = () => {
         barStyle="dark-content"
         backgroundColor="transparent"
       />
-      <View style={[styles.fle_ngang, { top: 10, marginBottom: 20 }]}>
-        <Text style={[styles.theText, { width: "80%" }]}>
+      <View
+        style={[
+          styles.fle_ngang,
+          { top: 10, marginBottom: 20, flexWrap: "wrap" },
+        ]}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.openDrawer();
+          }}
+        >
+          <Image
+            source={{
+              uri: "https://img.icons8.com/?size=30&id=59832&format=png",
+            }}
+            style={{ height: 45, width: 40, marginStart: 20 }}
+          />
+        </TouchableOpacity>
+        <Text style={[styles.theText, { width: "60%" }]}>
           Quản lý Công Việc
         </Text>
         <TouchableOpacity
@@ -188,6 +207,7 @@ const CongViec = () => {
         overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
         overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
         data={listCongViec}
+        keyExtractor={(item) => item._id.toString()}
         renderItem={({ item }) => {
           return <Item_Cong_Viec data={item} capNhat_DS={() => capNhat_DS()} />;
         }}
@@ -227,22 +247,23 @@ const CongViec = () => {
           }}
         >
           <View>
-          <View style={{ flexDirection: "row", alignItems: "center",}}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setshowModalSua(false);
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setshowModalSua(false);
+                }}
+              >
+                <Image
+                  style={{ width: 30, height: 30 }}
+                  source={{
+                    uri: "https://cdn0.iconfinder.com/data/icons/octicons/1024/x-512.png",
                   }}
-                >
-                  <Image
-                    style={{ width: 30, height: 30 }}
-                    source={{
-                      uri: "https://cdn0.iconfinder.com/data/icons/octicons/1024/x-512.png",
-                    }}
-                  />
-                </TouchableOpacity>
+                />
+              </TouchableOpacity>
 
-                <Text style={[styles.theText1]}>Sửa công việc</Text>
-              </View>{/* 1 */}
+              <Text style={[styles.theText1]}>Sửa công việc</Text>
+            </View>
+            {/* 1 */}
             <View
               style={[
                 styles.cuc1,
@@ -410,7 +431,7 @@ export default CongViec;
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "white", paddingTop: 20 },
   theText: { fontSize: 24, fontWeight: "500", textAlign: "center" },
-  theText1: { fontSize: 24, fontWeight: "500", textAlign: "center", left: 80  },
+  theText1: { fontSize: 24, fontWeight: "500", textAlign: "center", left: 80 },
   fle_ngang: { flexDirection: "row", alignItems: "center" },
   imageIcon: { height: 20, width: 20 },
 });

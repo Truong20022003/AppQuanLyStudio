@@ -78,7 +78,7 @@ const Chi_tiet_dich_vu = () => {
       });
   }, []);
 
-  const arrImages = chuyenItem.anh[0].split(",");
+  // const arrImages = chuyenItem.anh[0].split(",");
 
   const handleImagePress = (index) => {
     setCurrentImageIndex(index);
@@ -128,7 +128,7 @@ const Chi_tiet_dich_vu = () => {
                 onScroll={handleListScroll}
                 index={currentImageIndex}
               >
-                {arrImages.map((image, index) => (
+                {chuyenItem.anh.map((image, index) => (
                   <Image
                     key={index}
                     source={{ uri: image }}
@@ -146,7 +146,7 @@ const Chi_tiet_dich_vu = () => {
                 showsHorizontalScrollIndicator={false}
                 onScroll={handleScrollViewScroll}
               >
-                {arrImages.map((image, index) => (
+                {chuyenItem.anh.map((image, index) => (
                   <TouchableOpacity
                     key={index}
                     onPress={() => handleImagePress(index)}
@@ -252,7 +252,7 @@ const Chi_tiet_dich_vu = () => {
                   justifyContent: "space-between",
                   alignItems: "center",
                 }}
-                keyExtractor={(item) => item._id}
+                keyExtractor={(item) => item._id.toString()}
                 renderItem={({ item }) => (
                   <View style={{ flex: 1, margin: 10, alignSelf: "center" }}>
                     <TouchableOpacity>
