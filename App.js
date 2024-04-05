@@ -322,7 +322,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="MenuDrawer"
+        initialRouteName="MH_dang_nhap"
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="MenuDrawer" component={MenuDrawer} />
