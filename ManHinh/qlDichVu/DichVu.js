@@ -137,7 +137,7 @@ const DichVu = () => {
       let responseJson = res.data;
       console.log(responseJson, "result");
       if (responseJson.status === 200) {
-        alert("Tải lên thành công");
+        ToastAndroid.show("Thêm thành công", ToastAndroid.SHORT);
         setshowModalThem(false);
         capNhat_DS();
         setTen("");
@@ -146,7 +146,7 @@ const DichVu = () => {
         setmoTa("");
         setanh([]);
       } else {
-        ToastAndroid.show("Thêm thành công", ToastAndroid.SHORT);
+        ToastAndroid.show("Thêm không thành công", ToastAndroid.SHORT);
       }
     } catch (error) {
       console.error("Lỗi khi thêm mục:", error);

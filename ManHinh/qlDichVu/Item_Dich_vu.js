@@ -138,7 +138,7 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
         setupmoTa("");
         setupanh([]);
       } else {
-        ToastAndroid.show("Sửa thành công", ToastAndroid.SHORT);
+        ToastAndroid.show("Sửa không thành công", ToastAndroid.SHORT);
       }
     } catch (error) {
       console.error("Lỗi khi thêm mục:", error);
@@ -201,7 +201,7 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
     <Swipeable renderRightActions={renderRightActions}>
       <View style={[styles.container]}>
         <Image
-          source={{ uri: anh[1] }}
+          source={{ uri: anh[0] }}
           style={[xemThem ? styles.image2 : styles.image]}
         />
         <View style={styles.info}>
@@ -259,7 +259,32 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
           }}
         >
           <View>
-            <Text style={[styles.theText]}>Sửa dịch vụ</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={[styles.theText, { width: "85%" }]}>
+                Sửa dịch vụ
+              </Text>
+              <TouchableOpacity
+                style={{ height: 35 }}
+                onPress={() => {
+                  setshowModalSua(!showModalSua);
+                }}
+              >
+                <Image
+                  source={{
+                    uri: "https://img.icons8.com/?size=50&id=6483&format=png",
+                  }}
+                  style={{ height: 40, width: 40 }}
+                />
+              </TouchableOpacity>
+            </View>
+
             {/* 1 */}
             <View
               style={[
@@ -305,9 +330,8 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
               style={[
                 styles.cuc1,
                 {
-                  height: 110,
+                  height: "auto",
                   justifyContent: "space-between",
-                  marginBottom: 50,
                 },
               ]}
             >
@@ -325,9 +349,9 @@ const Item_Dich_vu = ({ data, capNhat_DS }) => {
                 style={[
                   styles.bottncustom,
                   {
-                    height: inputHeight,
                     minHeight: 70,
                     width: "100%",
+                    height: inputHeight,
                   },
                 ]}
                 onContentSizeChange={(event) => {
