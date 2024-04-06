@@ -3,24 +3,7 @@ import React from 'react'
 import { get_NhanVien } from '../../linkapi/api_nhanvien';
 
 const ItemGiaoViec = ({item}) => {
-    const laydl = () => {
-        fetch(`${API_URL}${get_NhanVien}`)
-          .then((rep) => rep.json())
-          .then((data) => {
-            setdatas(data);
-    
-            console.log(data);
-          })
-          .catch((err) => console.log(err));
-      };
-      useEffect(() => {
-        const tgchay = setTimeout(() => {
-          laydl();
-        }, 3000);
-        return () => {
-          clearTimeout(tgchay);
-        };
-      }, []);
+   
   return (
     <View style={styles.container}>
       <Image style={styles.avata} source={item.anh} ></Image>

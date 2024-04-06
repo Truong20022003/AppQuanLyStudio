@@ -218,12 +218,9 @@ const HoaDon = () => {
         if (service) {
           const hoaDonChiTietData = {
             idhoadon: hoaDonId,
-            soluong: 1,
-            dongia: service.gia,
             thanhtien: service.gia,
             iddichvu: serviceId,
           };
-
           await fetch(`${API_URL}${post_HoaDonChiTiet}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
