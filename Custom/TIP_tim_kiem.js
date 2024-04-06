@@ -15,6 +15,8 @@ const TIP_tim_kiem = ({
   onPressMic,
   onChangeText,
   value,
+  onPressIn,
+  styletimKiem,
 }) => {
   return (
     <View style={styles.container}>
@@ -23,8 +25,11 @@ const TIP_tim_kiem = ({
         style={[styles.input, style]}
         onChangeText={onChangeText}
         value={value}
+        onPressIn={onPressIn}
       />
-      <TouchableOpacity style={{ position: "absolute", top: 12, start: 4 }}>
+      <TouchableOpacity
+        style={{ position: "absolute", top: 12, start: 4, styletimKiem }}
+      >
         <Image
           style={{
             height: 30,
