@@ -13,6 +13,7 @@ import TextInputCustom from "../../Custom/Text_Input_custom";
 import Button_custom from "../../Custom/Button_custom";
 import { useNavigation } from "@react-navigation/native";
 import { API_URL, LOGIN } from "../../linkapi/diaChi_api";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MH_dang_nhap = () => {
   const navigation = useNavigation();
@@ -58,13 +59,15 @@ const MH_dang_nhap = () => {
         },
         body: JSON.stringify({ tentaikhoan, matkhau }),
       });
-      const data = await response.json();
-      if (data.status === 200) {
+      const datas = await response.json();
+      if (datas.status === 200) {
+        await AsyncStorage.setItem('keylogin', JSON.stringify(datas.data));
+        console.log(datas);
         navigation.navigate("MenuDrawer"); // Điều hướng tới màn hình MenuDrawer
-      } else if (data.status === 404) {
+      } else if (datas.status === 404) {
         seterrortentaikhoan("Tài khoản không tồn tại");
         console.log("sai tai khoan");
-      } else if (data.status === 401) {
+      } else if (datas.status === 401) {
         seterrormatkhau("Sai mật khẩu");
         console.log("sai mk");
       }

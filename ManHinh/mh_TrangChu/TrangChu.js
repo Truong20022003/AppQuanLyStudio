@@ -162,6 +162,7 @@ const TrangChu = () => {
       <TouchableOpacity
         onPress={() => {
           ////profile ở đây
+          navigaiton.navigate("Thong_Tin_Ca_Nhan");
         }}
         style={{
           position: "absolute",
