@@ -16,7 +16,12 @@ import { API_URL, GET_LIST_DICH_VU } from "../../linkapi/diaChi_api";
 import axios from "axios";
 import Item_dv_Duoc_Chon_nhieu from "./Item_dv_Duoc_Chon_nhieu";
 import Swiper from "react-native-swiper";
-import { get_DichVu } from "../../linkapi/api_dichvu";
+import {
+  getNewlyAddedDichVu,
+  get_DichVu,
+  get_Top_10_Dich_Vu,
+} from "../../linkapi/api_dichvu";
+import { useNavigation } from "@react-navigation/native";
 const Header = () => {
   const [clicktim, setclicktim] = useState(false);
   return (
@@ -68,6 +73,7 @@ const Header = () => {
 };
 ///////////////
 const TrangChu = () => {
+  const navigaiton = useNavigation(); //////hinh cung sua
   const [sildeshow, setsildeshow] = useState([
     {
       id: 1,
@@ -92,6 +98,8 @@ const TrangChu = () => {
   ]);
   const [dichVuList, setDichVuList] = useState([]);
   const [refreshing, setRefreshing] = useState(false); // State để theo dõi trạng thái của hoạt động tải lại
+  const [top_10_DV, settop_10_DV] = useState([]);
+  const [newlyAddedDichVu, setNewlyAddedDichVu] = useState([]);
 
   // Hàm để tải lại dữ liệu từ API
   const fetchData = () => {
@@ -106,15 +114,43 @@ const TrangChu = () => {
         setRefreshing(false); // Kết thúc hoạt động tải lại nếu có lỗi xảy ra
       });
   };
-
+  const Top_10_Dich_Vu = () => {
+    axios
+      .get(`${API_URL}${get_Top_10_Dich_Vu}`)
+      .then((response) => {
+        settop_10_DV(response.data.top10DichVu);
+        console.log("Top 10" + typeof response.data.top10DichVu);
+        setRefreshing(false); // Kết thúc hoạt động tải lại khi dữ liệu đã được cập nhật
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setRefreshing(false); // Kết thúc hoạt động tải lại nếu có lỗi xảy ra
+      });
+  };
+  const NewlyAddedDichVu = () => {
+    axios
+      .get(`${API_URL}${getNewlyAddedDichVu}`)
+      .then((response) => {
+        setNewlyAddedDichVu(response.data.newDV);
+        console.log("new dich vụ" + typeof response.data.newDV);
+        setRefreshing(false); // Kết thúc hoạt động tải lại khi dữ liệu đã được cập nhật
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setRefreshing(false); // Kết thúc hoạt động tải lại nếu có lỗi xảy ra
+      });
+  };
   useEffect(() => {
     fetchData(); // Gọi hàm fetchData() khi component được mount lần đầu tiên
+    Top_10_Dich_Vu();
+    NewlyAddedDichVu();
   }, []);
 
   // Hàm xử lý sự kiện khi người dùng kích hoạt hoạt động tải lại
   const handleRefresh = () => {
     setRefreshing(true); // Bắt đầu hoạt động tải lại
     fetchData(); // Gọi hàm fetchData() để tải lại dữ liệu từ API
+    Top_10_Dich_Vu();
   };
   return (
     <View style={styles.container}>
@@ -169,7 +205,7 @@ const TrangChu = () => {
         >
           {sildeshow.map((item) => (
             <Image
-            key={item.id}
+              key={item.id}
               source={{ uri: item.url }}
               style={{
                 width: "100%",
@@ -200,6 +236,9 @@ const TrangChu = () => {
               placeholder="Nhập dịch vụ bạn đang cần tìm"
               onPressCamera={() => console.log("camera")}
               onPressMic={() => console.log("mic")}
+              onPressIn={() => {
+                navigaiton.navigate("TimKiem");
+              }}
             />
             <Text
               style={[
@@ -207,8 +246,25 @@ const TrangChu = () => {
                 { fontSize: 20, marginTop: 10, fontWeight: "400" },
               ]}
             ></Text>
+            <Text style={{ fontSize: 20 }}>
+              Top 10 dịch vụ đc thuê nhiều nhất
+            </Text>
             <FlatList
-              data={dichVuList}
+              data={top_10_DV}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
+              overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
+              keyExtractor={(item) => item._id.toString()}
+              renderItem={({ item }) => {
+                return <Item_dv_Duoc_Chon_nhieu data={item} />;
+              }}
+            />
+            <Text style={{ fontSize: 20 }}>
+              Danh sách những dịch vụ vừa được mở bán
+            </Text>
+            <FlatList
+              data={newlyAddedDichVu}
               horizontal
               showsHorizontalScrollIndicator={false}
               overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
