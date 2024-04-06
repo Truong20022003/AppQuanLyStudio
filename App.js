@@ -28,6 +28,7 @@ import TrangChu from "./ManHinh/mh_TrangChu/TrangChu";
 import Chi_tiet_dich_vu from "./ManHinh/mh_TrangChu/Chi_tiet_dich_vu";
 import HoaDonChiTiet from "./ManHinh/qlHoaDonChiTiet/HoaDonChiTiet";
 import TimKiem from "./ManHinh/timKiem/TimKiem";
+import Thong_tin_ca_nhan from "./ManHinh/ThongTin/Thong_tin_ca_nhan";
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -332,6 +333,7 @@ export default function App() {
         <Stack.Screen name="Man_cho" component={Man_cho} />
         <Stack.Screen name="Chi_tiet_dich_vu" component={Chi_tiet_dich_vu} />
         <Stack.Screen name="Hoa_Don" component={HoaDon} />
+        <Stack.Screen name="Thong_Tin_Ca_Nhan" component={Thong_tin_ca_nhan} />
         <Stack.Screen name="Hoa_Don_Chi_Tiet" component={HoaDonChiTiet} />
         <Stack.Screen name="TimKiem" component={TimKiem} />
       </Stack.Navigator>
