@@ -8,6 +8,7 @@ import ItemNhanVien from "./ItemNhanVien";
 import { get_NhanVien, post_NhanVien } from "../../linkapi/api_nhanvien";
 import { icon } from "../../Image";
 import ModalAddNhanVien from "./ModalAddNhanVien";
+
 const NhanVien = () => {
   const navigation = useNavigation();
   

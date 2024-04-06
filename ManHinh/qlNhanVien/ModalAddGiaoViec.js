@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 const ModalAddGiaoViec = () => {
 
-  const renderItem = ({item})=>{
 
-  }
+  
+ 
+  
   return (
     <View>
       <Text>ModalAddGiaoViec</Text>

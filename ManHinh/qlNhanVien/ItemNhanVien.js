@@ -1,4 +1,4 @@
-import { Alert, Image, Modal, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Alert, FlatList, Image, Modal, StyleSheet, Switch, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Swipeable } from "react-native-gesture-handler";
 import { delete_NhanVien, put_NhanVien } from '../../linkapi/api_nhanvien';
@@ -8,8 +8,10 @@ import axios from "axios";
 import { API_URL } from '../../linkapi/diaChi_api';
 import { get_CongViec } from '../../linkapi/api_congviec';
 import { add_giaoviec } from '../../linkapi/api_giaoviec';
+import { useNavigation } from "@react-navigation/native";
+import { Picker } from "@react-native-picker/picker";
 const ItemNhanVien = ({ data, capNhat_DS }) => {
-
+  const navigation = useNavigation();
 
 
 
@@ -49,47 +51,60 @@ const ItemNhanVien = ({ data, capNhat_DS }) => {
   const [idCongViec, setIdCongViec] = useState('');
 
   const [modalGiaoViec, setModalGiaoViec] = useState(false);
- 
+
 
   const [listCongViec, setlistCongViec] = useState([]);
 
-  const getListcongviec = () =>{
-    axios
-      .get(`${API_URL}${get_CongViec}`)
-      .then((response) => {
-        setlistCongViec(response.data);
-        
+  const [selectedItems, setSelectedItems] = useState([]);
+
+
+  const getListcongviec = () => {
+    fetch(`${API_URL}${get_CongViec}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setlistCongViec(data);
+      console.log(data)
       })
-      .catch((error) => {
-        console.error("Lỗi khi lấy dữ liệu:", error);
-      });
-  }
+      .catch((error) => console.error("Lỗi khi lấy danh sách dịch vụ", error));
+  };
   useEffect(() => {
-    getListcongviec();
-    
+    getListcongviec()
   }, []);
-  
-  const addGiaoViec = async () => {
 
-    try {
-      const newData = {
-        id_nhanvien: _id,
-        id_congviec: idCongViec
-      };
-
-      const response = await axios.post(`${API_URL}${add_giaoviec}`, newData);
-
-      if (response.status === 200) {
-       
-        console.log("Giao việc cho nhân viên thành công!");
-      } else {
-        console.log("Giao việc cho nhân viên không thành công!");
-      }
-    } catch (error) {
-      console.error("Lỗi khi giao việc cho nhân viên:", error);
+  const toggleCongViecSelection = (congViecId) => {
+    if (selectedItems.includes(congViecId)) {
+      setSelectedItems(selectedItems.filter((id) => id !== congViecId));
+    } else {
+      setSelectedItems([...selectedItems, congViecId]);
     }
   };
 
+  const addGiaoViec = async () => {
+    try {
+      // Duyệt qua mỗi ID của công việc được chọn
+      for (const congViecId of selectedItems) {
+        // Tạo một đối tượng giao việc mới
+        const newGiaoViec = {
+          id_nhanvien: data._id, // ID của nhân viên
+          id_congviec: congViecId, // ID của công việc được chọn
+        };
+
+        // Gửi yêu cầu API để thêm giao việc mới vào cơ sở dữ liệu
+        const response = await axios.post(`${API_URL}${add_giaoviec}`, newGiaoViec);
+
+        // Kiểm tra kết quả trả về từ server
+        if (response.data.status === 'add thành công') {
+          console.log('Thêm giao việc thành công!');
+          setModalGiaoViec(false);
+          
+        } else {
+          console.log('Thêm giao việc không thành công:', response.data.result);
+        }
+      }
+    } catch (error) {
+      console.error('Lỗi khi thêm giao việc:', error);
+    }
+  };
   const validUpdate = () => {
     let isValid = true;
     if (hoTenUp.trim() === '') {
@@ -138,9 +153,6 @@ const ItemNhanVien = ({ data, capNhat_DS }) => {
     }
     return isValid;
   }
-
-
-
   const SuaItem = async () => {
     if (validUpdate()) {
       try {
@@ -186,31 +198,32 @@ const ItemNhanVien = ({ data, capNhat_DS }) => {
     }
 
   };
-
-
-
-
   const XoaItem = async () => {
     try {
+      
       // Gửi request để xóa mục nhân viên với ID của mục đó
       const response = await axios.delete(`${API_URL}${delete_NhanVien}${_id}`);
-  
+
       // Kiểm tra kết quả trả về từ server
-      if (response.status === 200) {
+     
+        if (response.status === 200) {
         // Nếu xóa thành công, cập nhật lại danh sách dữ liệu
         capNhat_DS();
+        ToastAndroid.show("Xóa Thành công", ToastAndroid.SHORT);
         console.log("Xóa mục nhân viên thành công!");
-      }
-      else if(response.status === 403){
-        console.log("Không thể xóa vì còn nhân viên trong giao việc");
       } else {
         console.log("Xóa mục nhân viên không thành công!");
       }
     } catch (error) {
-      console.error("Lỗi khi xóa mục nhân viên:", error);
+      if (error.response && error.response.status === 403) {
+        ToastAndroid.show("không thể xóa vì nhân viên này có việc được giao", ToastAndroid.SHORT);
+        console.log("không thể xóa vì nhân viên này có việc được giao");
+        return;
+      }
+      console.log("Lỗi" + error)
     }
   };
-  
+
 
 
   const renderRightActions = (progress, dragX) => {
@@ -258,7 +271,7 @@ const ItemNhanVien = ({ data, capNhat_DS }) => {
                 text: "Đồng ý",
                 onPress: () => {
                   XoaItem();
-                  ToastAndroid.show("Xóa Thành công", ToastAndroid.SHORT);
+                  
                 },
               },
             ]);
@@ -269,7 +282,8 @@ const ItemNhanVien = ({ data, capNhat_DS }) => {
 
         <TouchableOpacity
           style={styles.button}
-           >
+          onPress={() => { setModalGiaoViec(true) }}
+        >
           <Text>Giao việc </Text>
         </TouchableOpacity>
 
@@ -277,9 +291,13 @@ const ItemNhanVien = ({ data, capNhat_DS }) => {
     );
   };
 
-
+  const handleItemPress = (idNhanVien) => {
+    navigation.navigate("Quản lý nhân Viên", { idNhanVien }); // Chuyển hướng và truyền tham số
+    console.log(idNhanVien);
+  };
   return (
-    <Swipeable renderRightActions={renderRightActions}>
+    <TouchableOpacity onPress={() => handleItemPress(data._id)}>
+       <Swipeable renderRightActions={renderRightActions}>
       <View style={styles.container}>
         <Image style={styles.avata} source={{ uri: data.anh }}></Image>
         <View style={styles.viewText}>
@@ -457,30 +475,53 @@ const ItemNhanVien = ({ data, capNhat_DS }) => {
 
         {/* Modal Sửa////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
         {/* ////Modal Giao Việc////////////////////////////////////////////////////////////////////////////////////////// */}
-        {/* <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={closeModal}
-    >
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-        <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Chọn công việc:</Text>
-          <FlatList
-            data={listCongViec}
-            renderItem={renderItem}
-            keyExtractor={(item) => item._id}
-          />
-          <TouchableOpacity onPress={closeModal} style={{ marginTop: 10, alignSelf: 'flex-end' }}>
-            <Text style={{ color: 'blue' }}>Đóng</Text>
-          </TouchableOpacity>
-        </View>
-      </View> */}
-    {/* </Modal> */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalGiaoViec}
 
-     {/* ////Modal Giao Việc////////////////////////////////////////////////////////////////////////////////////////// */}
+        >
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+            <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Chọn công việc cho nhân viên:</Text>
+              <Text>Id nhân viên: {data._id}</Text>
+              <Text>Tên nhân viên: {data.hoten}</Text>
+
+              <FlatList
+                data={listCongViec}
+                keyExtractor={(item) => item._id}
+                renderItem={({ item }) => (
+                  <View style={{flexDirection: 'row', margin: 10}}>
+                    <View>
+                    <Text>{item._id}</Text>
+                    <Text>{item.tencongviec}</Text>
+                    </View>
+          
+                    <Switch
+                      value={selectedItems.includes(item._id)}
+                      onValueChange={() => toggleCongViecSelection(item._id)}
+                    />
+                    <Text>{item.tenCongViec}</Text>
+                  </View>
+
+                )}
+              />
+
+              <TouchableOpacity onPress={addGiaoViec} style={{ marginTop: 10, alignSelf: 'flex-end' }}>
+                <Text style={{ color: '#FF9966' }}>Giao việc</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalGiaoViec(false)} style={{ marginTop: 10, alignSelf: 'flex-end' }}>
+                <Text style={{ color: '#FF9966' }}>Đóng</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* ////Modal Giao Việc////////////////////////////////////////////////////////////////////////////////////////// */}
       </View>
     </Swipeable>
+    </TouchableOpacity>
+   
 
   )
 }
@@ -492,7 +533,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 'auto',
     flexDirection: 'row',
-    marginHorizontal: 10
+    marginHorizontal: 10, 
+    marginTop: 10,
 
   },
   avata: {
@@ -563,4 +605,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 17,
   },
+  viewItemAddGiaoViec: {
+    flexDirection: 'row',
+    flex: 1
+  },
+  itemTextAddGiaoViec: {
+    flexDirection: 'column'
+  }
 })
