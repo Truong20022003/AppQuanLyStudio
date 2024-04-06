@@ -105,8 +105,6 @@ const RenderItem = ({ item }) => {
         <Text style={{ color: "red" }}>ID hóa đơn: {item.idhoadon}</Text>
         <Text style={{ color: "red" }}>ID dịch vụ: {item.iddichvu}</Text>
         <Text style={{ color: "red" }}>ten dv: {tendv}</Text>
-        <Text style={{ color: "red" }}>Số lượng: {item.soluong}</Text>
-        <Text style={{ color: "red" }}>Đơn giá: {item.dongia}</Text>
         <Text style={{ color: "red" }}>Thành tiền: {item.thanhtien}</Text>
       </View>
     </View>
