@@ -141,14 +141,6 @@ const KhachHang = () => {
     }
     setemail(text);
   };
-  const handcheckDsdichvu = (text) => {
-    if (text.trim() === "") {
-      seterrorDsdichvu("Không được để trống");
-    } else {
-      seterrorDsdichvu("");
-    }
-    setdsdichvu(text);
-  };
 
   const capNhat_DS = () => {
     axios

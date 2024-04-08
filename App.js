@@ -376,7 +376,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="MH_dang_nhap"
+        initialRouteName="Man_cho"
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="MenuDrawer" component={MenuDrawer} />
