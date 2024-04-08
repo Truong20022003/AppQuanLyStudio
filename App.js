@@ -14,7 +14,7 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NhanVien from "./ManHinh/qlNhanVien/NhanVien";
 import HoaDon from "./ManHinh/qlHoaDon/HoaDon";
 import KhachHang from "./ManHinh/qlKhachHang/KhachHang";
@@ -29,17 +29,47 @@ import Chi_tiet_dich_vu from "./ManHinh/mh_TrangChu/Chi_tiet_dich_vu";
 import HoaDonChiTiet from "./ManHinh/qlHoaDonChiTiet/HoaDonChiTiet";
 import TimKiem from "./ManHinh/timKiem/TimKiem";
 import Thong_tin_ca_nhan from "./ManHinh/ThongTin/Thong_tin_ca_nhan";
+import Test from "./ManHinh/thongke/ThongKeBieuDo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import HoaDon_Trong_Thang from "./ManHinh/thongke/HoaDon_Trong_Thang";
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   const MenuDrawer = (props) => {
+    const [dulieulogin, setdulieulogin] = useState({});
+    const getDulieukhilogin = async () => {
+      try {
+        const value = await AsyncStorage.getItem("keylogin");
+        if (value !== null) {
+          const parsedValue = JSON.parse(value);
+          if (
+            parsedValue &&
+            typeof parsedValue === "object" &&
+            parsedValue.hasOwnProperty("_id")
+          ) {
+            setdulieulogin(parsedValue);
+            console.log("Dữ liệu lấy từ màn đăng nhập", parsedValue._id);
+          }
+        }
+      } catch (error) {
+        console.log("Error reading value: ", error);
+      }
+    };
+
+    useEffect(() => {
+      const unsubscribe = props.navigation.addListener("focus", () => {
+        getDulieukhilogin();
+      });
+      return unsubscribe;
+    }, [props.navigation]);
     return (
       <Drawer.Navigator
         screenOptions={{ headerShown: false }}
         initialRouteName="TrangChu"
         drawerContent={(props) => {
           const [showdialog, setshowdialog] = useState(false);
+
           return (
             <SafeAreaView style={{ flex: 1 }}>
               <View
@@ -47,7 +77,7 @@ export default function App() {
                   width: "100%",
                   backgroundColor: "#fff",
                   borderBottomWidth: 0.5,
-                  height: 220,
+                  height: "auto",
                   marginBottom: 10,
                   paddingTop: 20,
                   paddingStart: 20,
@@ -55,24 +85,46 @@ export default function App() {
                 }}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Image
-                    source={{
-                      uri: "https://th.bing.com/th/id/OIP.cttlm1zICNEvRj_evxyP3wHaLH?w=202&h=303&c=7&r=0&o=5&pid=1.7",
-                    }}
-                    style={{
-                      height: 100,
-                      width: 100,
-                      borderRadius: 50,
-                      alignSelf: "center",
-                      resizeMode: "cover",
-                    }}
-                  />
-                  <View style={{ marginStart: 10 }}>
-                    <Text style={{ fontSize: 17 }}> Ten khach hang</Text>
-                    <Text style={{ fontSize: 15 }}> loai tai khoan</Text>
+                  {dulieulogin.anh ? (
+                    <Image
+                      source={{ uri: dulieulogin?.anh }}
+                      style={{ height: 100, width: 100, borderRadius: 50 }}
+                    />
+                  ) : (
+                    <Image
+                      source={{
+                        uri: "https://th.bing.com/th/id/OIP.cttlm1zICNEvRj_evxyP3wHaLH?w=202&h=303&c=7&r=0&o=5&pid=1.7",
+                      }}
+                      style={{ height: 100, width: 100, borderRadius: 50 }}
+                    />
+                  )}
+                  <View style={{ marginStart: 10, flex: 1 }}>
+                    {dulieulogin.hoten ? (
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          fontSize: 18,
+                        }}
+                      >
+                        Họ tên:
+                        {dulieulogin.hoten}
+                      </Text>
+                    ) : (
+                      <Text style={{ fontSize: 20 }}>Wellcom</Text>
+                    )}
+                    <Text style={{ fontSize: 13 }}>
+                      Loại tài khoản:
+                      {dulieulogin.loaitaikhoan === 1 ? "admin" : "khách"}
+                    </Text>
                   </View>
                 </View>
-                <Text style={{ bottom: -50, fontSize: 25, fontWeight: "700" }}>
+                <Text
+                  style={{
+                    fontSize: 25,
+                    fontWeight: "700",
+                    bottom: 0,
+                  }}
+                >
                   Chào mừng bạn
                 </Text>
               </View>
@@ -336,6 +388,10 @@ export default function App() {
         <Stack.Screen name="Thong_Tin_Ca_Nhan" component={Thong_tin_ca_nhan} />
         <Stack.Screen name="Hoa_Don_Chi_Tiet" component={HoaDonChiTiet} />
         <Stack.Screen name="TimKiem" component={TimKiem} />
+        <Stack.Screen
+          name="HoaDon_Trong_Thang"
+          component={HoaDon_Trong_Thang}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
