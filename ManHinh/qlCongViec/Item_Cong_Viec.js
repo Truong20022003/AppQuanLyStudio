@@ -16,13 +16,12 @@ import { delete_CongViec, put_CongViec } from "../../linkapi/api_congviec";
 import TextInputCustom from "../../Custom/Text_Input_custom";
 import Button_custom from "../../Custom/Button_custom";
 import { Picker } from "@react-native-picker/picker";
-import { get_NhanVien } from "../../linkapi/api_nhanvien";
+
 
 const Item_Cong_Viec = ({ data, capNhat_DS }) => {
   const {
     _id,
     tencongviec,
-    idnhanvien,
     ngaybatdau,
     ngayketthuc,
     trangthai,
@@ -31,10 +30,10 @@ const Item_Cong_Viec = ({ data, capNhat_DS }) => {
 
   const [showModalSua, setshowModalSua] = useState(false);
 
-  const [UpidnhanvienList, setUpidnhanvienList] = useState([]);
+
 
   const [uptencongviec, setUpTencongviec] = useState("");
-  const [upidnhanvien, setUpidnhanvien] = useState("");
+
   const [upngaybatdau, setUpngaybatdau] = useState("");
   const [upngayketthuc, setUpngayketthuc] = useState("");
   const [uptrangthai, setUptrangthai] = useState("");
@@ -42,7 +41,7 @@ const Item_Cong_Viec = ({ data, capNhat_DS }) => {
   ////
 
   const [errortencongviec, seterrorTencongviec] = useState("");
-  const [erroridnhanvien, seterrorIdnhanvien] = useState("");
+
   const [errorngaybatdau, seterrorNgaybatdau] = useState("");
   const [errorngayketthuc, seterrorNgayketthuc] = useState("");
   const [errortrangthai, seterrorTrangthai] = useState("");
@@ -81,18 +80,11 @@ const Item_Cong_Viec = ({ data, capNhat_DS }) => {
     setUpmota(text);
   };
 
-  const fetchIdNhanVienList = () => {
-    fetch(`${API_URL}${get_NhanVien}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setUpidnhanvienList(data); // Lưu trữ cả id và tên của nhân viên
-      })
-      .catch((error) => console.error("Lỗi khi lấy list nhân viên", error));
-  };
+
 
   useEffect(() => {
     const reload = setTimeout(() => {
-      fetchIdNhanVienList();
+  
     }, 1000);
 
     return () => {
@@ -143,7 +135,7 @@ const Item_Cong_Viec = ({ data, capNhat_DS }) => {
 
       const response = await axios.put(`${API_URL}${put_CongViec}${_id}`, {
         tencongviec: uptencongviec,
-        idnhanvien: upidnhanvien,
+   
         ngaybatdau: upngaybatdau,
         ngayketthuc: upngayketthuc,
         trangthai: uptrangthai,
@@ -153,7 +145,7 @@ const Item_Cong_Viec = ({ data, capNhat_DS }) => {
       setshowModalSua(false); // Đóng modal sau khi sửa thành công
       capNhat_DS(); // Cập nhật danh sách sau khi sửa
       setUpTencongviec("");
-      setUpidnhanvien("");
+   
       setUpngaybatdau("");
       setUpngayketthuc("");
       setUptrangthai("");
@@ -181,7 +173,7 @@ const Item_Cong_Viec = ({ data, capNhat_DS }) => {
             /* Xử lý sự kiện khi nhấn nút "Sửa" */
             setshowModalSua(!showModalSua);
             setUpTencongviec(tencongviec);
-            setUpidnhanvien(idnhanvien);
+        
             setUpngaybatdau(ngaybatdau);
             setUpngayketthuc(ngayketthuc);
             setUptrangthai(trangthai);
@@ -226,7 +218,7 @@ const Item_Cong_Viec = ({ data, capNhat_DS }) => {
         {/* <Image source={{ uri: anh }} style={styles.image} /> */}
         <View style={styles.info}>
           <Text style={styles.title}>{tencongviec}</Text>
-          <Text>ID nhân viên: {idnhanvien}</Text>
+
           <Text>Ngày bắt đầu: {ngaybatdau}</Text>
           <Text>Ngày kết thúc: {ngayketthuc}</Text>
           <Text>
@@ -247,13 +239,13 @@ const Item_Cong_Viec = ({ data, capNhat_DS }) => {
           onPress={() => {
             setshowModalSua(!showModalSua);
             setUpTencongviec("");
-            setUpidnhanvien("");
+     
             setUpngaybatdau("");
             setUpngayketthuc("");
             setUptrangthai(trangthai);
             setUpmota("");
             seterrorTencongviec("");
-            seterrorIdnhanvien("");
+        
             seterrorNgaybatdau("");
             seterrorNgayketthuc("");
             seterrorMota("");
@@ -305,34 +297,7 @@ const Item_Cong_Viec = ({ data, capNhat_DS }) => {
                 style={styles.bottncustom}
               />
             </View>
-            {/* 2 */}
-            <View
-              style={[
-                styles.cuc1,
-                { height: 110, justifyContent: "space-between" },
-              ]}
-            >
-              <Text
-                style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
-              >
-                ID nhân viên:
-              </Text>
-              <Picker
-                  style={{ height: "auto" }}
-                  selectedValue={upidnhanvien}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setUpidnhanvien(itemValue)
-                  }
-                >
-                  {UpidnhanvienList.map((nhanvien) => (
-                    <Picker.Item
-                      key={nhanvien._id}
-                      label={`${nhanvien.hoten}`}
-                      value={nhanvien._id}
-                    />
-                  ))}
-                </Picker>
-            </View>
+           
             {/* 3 */}
             <View
               style={[
@@ -432,7 +397,7 @@ const Item_Cong_Viec = ({ data, capNhat_DS }) => {
                 CapNhatItem();
                 console.log(
                   tencongviec,
-                  idnhanvien,
+           
                   ngaybatdau,
                   ngayketthuc,
                   trangthai,

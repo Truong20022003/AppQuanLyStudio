@@ -27,52 +27,41 @@ const ModalAddNhanVien = ({ visible, closeModal, capNhat_DS }) => {
     console.log(kq);
     if (!kq.canceled) {
       setAnh(kq.assets[0].uri);
+      console.log(kq.assets[0].uri)
     }
   };
-
-// const pickImage = async () => {
-//     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-//     if (status !== 'granted') {
-//       Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to make this work!');
-//       return;
-//     }
-  
-//     const result = await ImagePicker.launchImageLibraryAsync({
-//       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-//       allowsEditing: true,
-//       aspect: [4, 3],
-//       quality: 1,
-//     });
-  
-//     if (!result.canceled) {
-//       setAnh(result.uri); // Lưu đường dẫn của ảnh được chọn vào state anh
-//     }
-//   };
   const addNhanVien = async () => {
-
     try {
-
-        // Kiểm tra xem các trường bắt buộc có được điền đầy đủ hay không
-    if (!hoTen || !sDT || !diaChi || !email || !tenTaiKhoan || !matKhau ||loaiTaiKhoan === 0 || !anh) {
+      if (!hoTen || !sDT || !diaChi || !email || !tenTaiKhoan || !matKhau || loaiTaiKhoan === 0 || !anh) {
         Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin.');
         return;
       }
   
-
-      const newData = {
-        hoten: hoTen,
-        sdt: sDT,
-        diachi: diaChi,
-        email: email,
-        ghichu: ghiChu,
-        tentaikhoan: tenTaiKhoan,
-        loaitaikhoan: loaiTaiKhoan,
-        matkhau: matKhau,
-        anh: anh,
-        trangthai: trangThai,
-      };
-
-      const response = await axios.post(`${API_URL}${post_NhanVien}`, newData);
+      // Tạo một đối tượng FormData
+      const formData = new FormData();
+  
+      // Thêm thông tin nhân viên vào FormData
+      formData.append('hoten', hoTen);
+      formData.append('sdt', sDT);
+      formData.append('diachi', diaChi);
+      formData.append('email', email);
+      formData.append('ghichu', ghiChu);
+      formData.append('tentaikhoan', tenTaiKhoan);
+      formData.append('loaitaikhoan', loaiTaiKhoan);
+      formData.append('matkhau', matKhau);
+      formData.append('trangthai', trangThai);
+        formData.append("anh", {
+          uri: anh,
+          type: "image/jpeg",
+          name: `photo.jpg`,
+        });
+      console.log('aaaaaaaaaaasdsadd'+JSON.stringify(formData))
+      // Gửi request lên server
+      const response = await axios.post(`${API_URL}${post_NhanVien}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       if (response.status === 200) {
         capNhat_DS();
@@ -95,7 +84,7 @@ const ModalAddNhanVien = ({ visible, closeModal, capNhat_DS }) => {
       console.error("Lỗi khi thêm nhân viên:", error);
     }
   };
-
+  
   return (
     <Modal
       animationType="slide"

@@ -35,6 +35,8 @@ const ItemNhanVien = ({ data, capNhat_DS }) => {
   const [emailUp, setEmailUp] = useState('');
   const [ghiChuUp, setGhiChuUp] = useState('');
   const [loaiTaiKhoanUp, setLoaiTaiKhoanUp] = useState(0);
+  const [newImageUri, setNewImageUri] = useState('');
+
 
   const [trangThaiUp, settrangThaiUp] = useState(0);
   const [modalSua, setModalSua] = useState(false);
@@ -295,6 +297,8 @@ const ItemNhanVien = ({ data, capNhat_DS }) => {
     navigation.navigate("Quản lý nhân Viên", { idNhanVien }); // Chuyển hướng và truyền tham số
     console.log(idNhanVien);
   };
+
+  
   return (
     <TouchableOpacity onPress={() => handleItemPress(data._id)}>
        <Swipeable renderRightActions={renderRightActions}>

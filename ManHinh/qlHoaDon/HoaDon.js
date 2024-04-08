@@ -498,7 +498,7 @@ const HoaDon = () => {
           <Text
             style={{
               width: "100%",
-              color: "aqua",
+           
               fontSize: 20,
             }}
           >
@@ -520,9 +520,15 @@ const HoaDon = () => {
               </View>
             ))}
           </ScrollView>
+            <Text style={{
+              width: "100%",
+         
+              fontSize: 20,
+            }}>Chọn nhân viên</Text>
+            <View style={{ height: "auto", borderWidth: 1, borderRadius: 10 }}>
 
-          <Picker
-            style={{ height: "auto" }}
+              <Picker
+            style={{ height: "auto", borderWidth: 2 }}
             selectedValue={idkhachhang}
             onValueChange={(itemValue, itemIndex) => setidkhachhang(itemValue)}
           >
@@ -534,6 +540,8 @@ const HoaDon = () => {
               />
             ))}
           </Picker>
+            </View>
+          
 
           {/* <TouchableOpacity onPress={() => setModalDate(true)}>
         <Text>Chọn ngày đặt hàng</Text>

@@ -16,16 +16,16 @@ import Item_Cong_Viec from "./Item_Cong_Viec";
 import { get_CongViec, post_CongViec } from "../../linkapi/api_congviec";
 import Button_custom from "../../Custom/Button_custom";
 import TextInputCustom from "../../Custom/Text_Input_custom";
-import { get_NhanVien } from "../../linkapi/api_nhanvien";
+
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 
 const CongViec = () => {
   const navigation = useNavigation();
   const [listCongViec, setlistCongViec] = useState([]);
-  const [IDnhanvienList, setIDnhanvienList] = useState([]);
+
   const [tencongviec, setTencongviec] = useState("");
-  const [idnhanvien, setidnhanvien] = useState("");
+
   const [ngaybatdau, setngaybatdau] = useState("");
   const [ngayketthuc, setngayketthuc] = useState("");
   const [trangthai, settrangthai] = useState("");
@@ -33,7 +33,7 @@ const CongViec = () => {
   ////
   const [showModalThem, setshowModalThem] = useState(false);
   const [errortencongviec, seterrorTencongviec] = useState("");
-  const [erroridnhanvien, seterrorIdnhanvien] = useState("");
+
   const [errorngaybatdau, seterrorNgaybatdau] = useState("");
   const [errorngayketthuc, seterrorNgayketthuc] = useState("");
   const [errortrangthai, seterrorTrangthai] = useState("");
@@ -73,14 +73,7 @@ const CongViec = () => {
     setmota(text);
   };
 
-  const fetchIdNhanVienList = () => {
-    fetch(`${API_URL}${get_NhanVien}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setIDnhanvienList(data); // Lưu trữ cả id và tên của nhân viên
-      })
-      .catch((error) => console.error("Lỗi khi lấy list nhân viên", error));
-  };
+ 
 
   const capNhat_DS = () => {
     axios
@@ -95,7 +88,7 @@ const CongViec = () => {
   useEffect(() => {
     const reload = setTimeout(() => {
       capNhat_DS();
-      fetchIdNhanVienList();
+ 
     }, 1000);
 
     return () => {
@@ -135,7 +128,7 @@ const CongViec = () => {
       }
       const response = await axios.post(`${API_URL}${post_CongViec}`, {
         tencongviec: tencongviec,
-        idnhanvien: idnhanvien,
+     
         ngaybatdau: ngaybatdau,
         ngayketthuc: ngayketthuc,
         trangthai: trangthai,
@@ -145,7 +138,7 @@ const CongViec = () => {
       setshowModalThem(false); // Đóng modal sau khi sửa thành công
       capNhat_DS(); // Cập nhật danh sách sau khi sửa
       setTencongviec("");
-      setidnhanvien("");
+
       setngaybatdau("");
       setngayketthuc("");
       settrangthai(true);
@@ -224,13 +217,13 @@ const CongViec = () => {
           onPress={() => {
             setshowModalThem(!showModalThem);
             setTencongviec("");
-            setidnhanvien("");
+  
             setngaybatdau("");
             setngayketthuc("");
             settrangthai(trangthai);
             setmota("");
             seterrorTencongviec("");
-            seterrorIdnhanvien("");
+
             seterrorNgaybatdau("");
             seterrorNgayketthuc("");
             seterrorMota("");
@@ -282,34 +275,7 @@ const CongViec = () => {
                 style={styles.inputcustom}
               />
             </View>
-            {/* 2 */}
-            <View
-              style={[
-                styles.cuc1,
-                { height: 110, justifyContent: "space-between" },
-              ]}
-            >
-              <Text
-                style={[styles.theText, { fontSize: 16, textAlign: "auto" }]}
-              >
-                ID nhân viên:
-              </Text>
-              <Picker
-                style={{ height: "auto" }}
-                selectedValue={idnhanvien}
-                onValueChange={(itemValue, itemIndex) =>
-                  setidnhanvien(itemValue)
-                }
-              >
-                {IDnhanvienList.map((nhanvien) => (
-                  <Picker.Item
-                    key={nhanvien._id}
-                    label={`${nhanvien.hoten}`}
-                    value={nhanvien._id}
-                  />
-                ))}
-              </Picker>
-            </View>
+            
             {/* 3 */}
             <View
               style={[
@@ -411,7 +377,7 @@ const CongViec = () => {
                 ThemItem();
                 console.log(
                   tencongviec,
-                  idnhanvien,
+             
                   ngaybatdau,
                   ngayketthuc,
                   trangthai,
