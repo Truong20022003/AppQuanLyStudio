@@ -58,6 +58,7 @@ const Top = () => {
 };
 
 const Chi_tiet_dich_vu = () => {
+  const navigation =useNavigation()
   const router = useRoute();
   const chuyenItem = router.params?.chuyenItem;
   const [moTa, setmoTa] = useState(true);
@@ -255,11 +256,12 @@ const Chi_tiet_dich_vu = () => {
                 keyExtractor={(item) => item._id.toString()}
                 renderItem={({ item }) => (
                   <View style={{ flex: 1, margin: 10, alignSelf: "center" }}>
-                    <TouchableOpacity>
+                    <TouchableOpacity >
                       <Image
                         source={{ uri: item?.anh[0] }}
                         style={{ height: 100, width: 150 }}
                       />
+                      <Text>{item.ten}</Text>
                       <Text>{item.gia}</Text>
                     </TouchableOpacity>
                   </View>
@@ -289,7 +291,6 @@ const styles = StyleSheet.create({
   imgaIcon: { height: 25, width: 25 },
   conten_list_goi_y: {
     height: "auto",
-    backgroundColor: "yellow",
     paddingHorizontal: 20,
     marginBottom: 50,
   },

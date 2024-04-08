@@ -279,7 +279,7 @@ const TrangChu = () => {
             <Text>Thời gian còn 12:00:00</Text>
             <FlatList
               data={dichVuList}
-              horizontal
+numColumns={2}
               showsHorizontalScrollIndicator={false}
               overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
               overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
