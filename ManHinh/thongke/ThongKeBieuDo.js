@@ -19,7 +19,7 @@ import {
   getHoaDonThangVaNam,
   getThongKeTongTien_NamBieuDo,
 } from "../../linkapi/api.thongke";
-
+import { useNavigation, useRoute } from "@react-navigation/native";
 export const Month = [
   "Jan",
   "Feb",
@@ -37,15 +37,15 @@ export const Month = [
 export const DataFake = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
-const ThongKeBieuDo = ({ navigation }) => {
+const ThongKeBieuDo = ({ thang, year }) => {
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
   const [doanhThuInMonth, setDoanhThuInMonth] = useState([]);
   const [getMonth, setGetMonth] = useState([]);
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [monthlyOrders, setMonthlyOrders] = useState([]);
+  // const [year, setYear] = useState(new Date().getFullYear());
   const [hoaDonTrongThang, sethoaDonTrongThang] = useState([]);
-  const [thang, setthang] = useState(new Date().getMonth());
+  // const [thang, setthang] = useState(new Date().getMonth());
   const [thongbao, setthongbao] = useState(true);
   const [showAllItems, setShowAllItems] = useState(false);
   const getDoanhThuInMonth = async () => {
@@ -66,7 +66,7 @@ const ThongKeBieuDo = ({ navigation }) => {
         setthongbao(false);
       }
     } catch (error) {
-      console.error("Lỗi khi lấy dữ liệu doanh thu theo tháng:", error);
+      console.error("Lỗi khi lấy dữ liệu doanh thu bieu do:", error);
     } finally {
       setIsLoading(false); // Dừng loading khi dữ liệu đã được lấy xong
     }
@@ -96,7 +96,7 @@ const ThongKeBieuDo = ({ navigation }) => {
         setthongbao(true); // Đặt thông báo hiển thị là true
       }
     } catch (error) {
-      console.error("Lỗi khi lấy dữ liệu doanh thu theo tháng:", error);
+      console.error("Lỗi khi lấy dữ liệu doanh thu theo tháng va nam:", error);
     } finally {
       setIsLoading2(false); // Dừng loading khi dữ liệu đã được lấy xong
     }
@@ -176,7 +176,8 @@ const ThongKeBieuDo = ({ navigation }) => {
                   fontWeight: "bold",
                 }}
               >
-                Biểu đồ doanh thu theo năm {"\n"}
+                Biểu đồ doanh thu theo năm {year}
+                {"\n"}
                 <Text style={{ fontSize: 10, fontStyle: "italic" }}>
                   (tỉ giá: 1/1000 VNĐ)
                 </Text>
@@ -232,73 +233,7 @@ const ThongKeBieuDo = ({ navigation }) => {
                   />
                 )}
               </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  width: "100%",
-                  padding: 4,
-                  justifyContent: "center",
-                  top: -10,
-                }}
-              >
-                <TouchableOpacity onPress={() => setYear(year - 1)}>
-                  <Image source={icon.back} style={{ width: 22, height: 22 }} />
-                </TouchableOpacity>
-                <Text>{year}</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (year === new Date().getFullYear()) {
-                      ToastAndroid.show(
-                        "Năm hiẹn tại là năm 2024",
-                        ToastAndroid.SHORT
-                      );
-                    } else {
-                      setYear(year + 1);
-                    }
-                  }}
-                >
-                  <Image
-                    source={{
-                      uri: "https://img.icons8.com/?size=50&id=61&format=png",
-                    }}
-                    style={{ width: 22, height: 22 }}
-                  />
-                </TouchableOpacity>
-              </View>
             </View>
-            <ScrollView
-              horizontal
-              contentContainerStyle={{
-                flexDirection: "row",
-                justifyContent: "space-around",
-                alignItems: "center",
-                marginVertical: 20,
-                paddingHorizontal: 10,
-              }}
-            >
-              {months.map((month, monthIndex) => (
-                <TouchableOpacity
-                  style={[
-                    {
-                      marginHorizontal: 5,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    },
-                    thang === monthIndex && {
-                      backgroundColor: "#e0e0eb", // Thay đổi màu khi được chọn
-                      opacity: 0.6,
-                      padding: 10,
-                      borderRadius: 6,
-                    },
-                  ]}
-                  key={monthIndex}
-                  onPress={() => handleMonthPress(monthIndex)}
-                >
-                  <Text>{month}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
             <View
               style={{
                 height: hoaDonTrongThang.length === 0 ? 100 : "auto",
@@ -314,7 +249,7 @@ const ThongKeBieuDo = ({ navigation }) => {
                     width: "100%",
                   }}
                 >
-                  Không có hóa đơn nào trong tháng {thang + 1} này
+                  Không có hóa đơn nào trong tháng {thang + 1}/{year}
                 </Text>
               ) : null}
               <FlatList

@@ -196,12 +196,24 @@ const TimKiem = (props) => {
           }}
         />
       </View>
-      <View style={{ height: lichSuTimKiem.length > 0 ? "auto" : 200 }}>
+      <View style={{ height: lichSuTimKiem.length > 0 ? "auto" : 0 }}>
         <Text style={styles.theText}>Lịch sử tìm kiếm:</Text>
         {lichSuTimKiem.length > 0 && (
           <View>
             <FlatList data={lichSuTimKiem} renderItem={hienThiMucTimKiem} />
-            <TouchableOpacity onPress={xoaLichSuTimKiem}>
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert("bạn có chắc muốn xóa không", "", [
+                  { text: "Hủy" },
+                  {
+                    text: "OK",
+                    onPress: () => {
+                      xoaLichSuTimKiem();
+                    },
+                  },
+                ]);
+              }}
+            >
               <Text
                 style={{ fontSize: 13, width: "100%", textAlign: "center" }}
               >
