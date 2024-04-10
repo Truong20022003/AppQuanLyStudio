@@ -28,6 +28,7 @@ import { get_DichVu } from "../../linkapi/api_dichvu";
 import CheckBox from "@react-native-community/checkbox";
 import { post_HoaDonChiTiet } from "../../linkapi/api_hoadonchitiet";
 import moment from "moment";
+import { Swipeable } from "react-native-gesture-handler";
 const HoaDon = () => {
   const navigation = useNavigation();
 
@@ -281,6 +282,58 @@ const HoaDon = () => {
       Alert.alert("Không được để trống");
     }
   };
+  const renderRightActions = (progress, dragX, item) => (
+    <View style={[styles.rightActions]}>
+      <TouchableOpacity
+        style={{
+          alignItems: "center",
+          backgroundColor: "blue",
+          justifyContent: "center",
+          paddingVertical: 20,
+          marginEnd: 10,
+          flex: 1,
+        }}
+        onPress={() => {
+          _id = item._id;
+          Alert.alert("Bạn có muốn xóa không?", "", [
+            { text: "Hủy" },
+            {
+              text: "OK",
+              onPress: () => {
+                xoadl(_id);
+              },
+            },
+          ]);
+        }}
+      >
+        <Text style={styles.actionText}>Sửa</Text>
+      </TouchableOpacity>
+      <View style={{ height: 3 }}></View>
+      <TouchableOpacity
+        style={{
+          alignItems: "center",
+          backgroundColor: "red",
+          justifyContent: "center",
+          paddingVertical: 20,
+          marginEnd: 10,
+          flex: 1,
+        }}
+        onPress={() => {
+          _id = item._id;
+          setupidkhachhang(item.idkhachhang);
+          setupngaydathang(item.ngaydathang);
+          setuptongtien(item.tongtien.toString());
+          setuptrangthai(item.trangthai);
+          setupngaytrahang(item.ngaytrahang);
+          setmodalsua(true);
+          setidhoadon(_id);
+        }}
+      >
+        <Text style={[styles.actionText]}>Xóa</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   const renderItem = ({ item }) => {
     const khachHang = khachHangList.find(
       (khachHang) => khachHang._id === item.idkhachhang
@@ -288,56 +341,45 @@ const HoaDon = () => {
     const tenKhachHang = khachHang ? khachHang.hoten : "Không có";
 
     const color = item.trangthai === true ? "#00BFFF" : "red";
-    return (
-      <TouchableOpacity onPress={() => handleItemPress(item._id)}>
-        <View style={styles.item}>
-          <Text>Khách hàng: {item.idkhachhang}</Text>
-          <Text>Tên khách hàng: {tenKhachHang}</Text>
-          <Text>Ngày đặt hàng: {item.ngaydathang}</Text>
 
-          <Text>Tổng tiền: {item.tongtien}</Text>
-          <Text style={{ color: color }}>
-            Trạng thái:{" "}
-            {item.trangthai === true ? "Đã thanh toán" : "Chưa thanh toán"}
-          </Text>
-          <Text>Ngày trả hàng: {item.ngaytrahang}</Text>
-          <View style={styles.viewButton}>
-            <TouchableOpacity
-              onPress={() => {
-                _id = item._id;
-                Alert.alert("ban co muon xoa khong", "", [
-                  { text: "Hủy" },
-                  {
-                    text: "OK",
-                    onPress: () => {
-                      xoadl(_id);
-                    },
-                  },
-                ]);
-              }}
-            >
-              <Image
-                style={styles.deleteButton}
-                source={icon.icondelete}
-              ></Image>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                _id = item._id;
-                setupidkhachhang(item.idkhachhang);
-                setupngaydathang(item.ngaydathang);
-                setuptongtien(item.tongtien.toString());
-                setuptrangthai(item.trangthai);
-                setupngaytrahang(item.ngaytrahang);
-                setmodalsua(true);
-                setidhoadon(_id);
-              }}
-            >
-              <Image style={styles.deleteButton} source={icon.iconupdate} />
-            </TouchableOpacity>
+    return (
+      <Swipeable
+        renderRightActions={(progress, dragX) =>
+          renderRightActions(progress, dragX, item)
+        }
+      >
+        <TouchableOpacity
+          onPress={() => handleItemPress(item._id)}
+          style={{
+            backgroundColor: "white",
+            paddingHorizontal: 10,
+            marginHorizontal: 20,
+            borderRadius: 10,
+            padding: 10,
+            marginBottom: 10,
+            elevation: 5, // Độ nổi lên của phần tử
+            shadowColor: "#000", // Màu của bóng
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25, // Độ trong suốt của bóng
+            shadowRadius: 3.84, // Độ rộng của bóng
+          }}
+        >
+          <View style={styles.item}>
+            <Text>Khách hàng: {item.idkhachhang}</Text>
+            <Text>Tên khách hàng: {tenKhachHang}</Text>
+            <Text>Ngày đặt hàng: {item.ngaydathang}</Text>
+            <Text>Tổng tiền: {item.tongtien}</Text>
+            <Text style={{ color: color }}>
+              Trạng thái:{" "}
+              {item.trangthai === true ? "Đã thanh toán" : "Chưa thanh toán"}
+            </Text>
+            <Text>Ngày trả hàng: {item.ngaytrahang}</Text>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </Swipeable>
     );
   };
   const renderEditModal = (item) => {
@@ -498,7 +540,7 @@ const HoaDon = () => {
           <Text
             style={{
               width: "100%",
-           
+
               fontSize: 20,
             }}
           >
@@ -520,28 +562,32 @@ const HoaDon = () => {
               </View>
             ))}
           </ScrollView>
-            <Text style={{
+          <Text
+            style={{
               width: "100%",
-         
-              fontSize: 20,
-            }}>Chọn nhân viên</Text>
-            <View style={{ height: "auto", borderWidth: 1, borderRadius: 10 }}>
 
-              <Picker
-            style={{ height: "auto", borderWidth: 2 }}
-            selectedValue={idkhachhang}
-            onValueChange={(itemValue, itemIndex) => setidkhachhang(itemValue)}
+              fontSize: 20,
+            }}
           >
-            {khachHangList.map((khachHang) => (
-              <Picker.Item
-                key={khachHang._id}
-                label={`${khachHang.hoten}`}
-                value={khachHang._id}
-              />
-            ))}
-          </Picker>
-            </View>
-          
+            Chọn nhân viên
+          </Text>
+          <View style={{ height: "auto", borderWidth: 1, borderRadius: 10 }}>
+            <Picker
+              style={{ height: "auto", borderWidth: 2 }}
+              selectedValue={idkhachhang}
+              onValueChange={(itemValue, itemIndex) =>
+                setidkhachhang(itemValue)
+              }
+            >
+              {khachHangList.map((khachHang) => (
+                <Picker.Item
+                  key={khachHang._id}
+                  label={`${khachHang.hoten}`}
+                  value={khachHang._id}
+                />
+              ))}
+            </Picker>
+          </View>
 
           {/* <TouchableOpacity onPress={() => setModalDate(true)}>
         <Text>Chọn ngày đặt hàng</Text>
@@ -646,16 +692,19 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
     flex: 1,
+    backgroundColor: "white",
   },
   textdanhsach: {
     margin: 20,
     fontSize: 30,
   },
   item: {
-    backgroundColor: "#f9c2ff",
+    backgroundColor: "white",
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
+    flex: 1,
+    height: "100%",
   },
   deleteButton: {
     width: 40,
@@ -664,7 +713,6 @@ const styles = StyleSheet.create({
   },
   viewButton: {
     flexDirection: "row",
-    justifyContent: "space-around",
   },
   modalContainer: {
     flex: 1,
@@ -710,5 +758,16 @@ const styles = StyleSheet.create({
     width: 200,
     height: 40,
     marginBottom: 10,
+  },
+  rightActions: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  actionText: {
+    fontSize: 12,
+    paddingHorizontal: 10,
+    color: "white",
+    fontWeight: "600",
   },
 });

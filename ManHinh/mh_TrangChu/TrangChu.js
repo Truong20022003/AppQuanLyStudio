@@ -22,6 +22,7 @@ import {
   get_Top_10_Dich_Vu,
 } from "../../linkapi/api_dichvu";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const Header = () => {
   const [clicktim, setclicktim] = useState(false);
   return (
@@ -100,7 +101,29 @@ const TrangChu = () => {
   const [refreshing, setRefreshing] = useState(false); // State để theo dõi trạng thái của hoạt động tải lại
   const [top_10_DV, settop_10_DV] = useState([]);
   const [newlyAddedDichVu, setNewlyAddedDichVu] = useState([]);
-
+  const [dulieulogin, setdulieulogin] = useState([]);
+  const laydlLogin = async () => {
+    try {
+      const value = await AsyncStorage.getItem("keylogin");
+      if (value !== null) {
+        // setdulieulogin(JSON.parse(value));
+        const parsedValue = JSON.parse(value);
+        if (
+          parsedValue &&
+          typeof parsedValue === "object" &&
+          parsedValue.hasOwnProperty("_id")
+        ) {
+          setdulieulogin(parsedValue);
+          setId(parsedValue._id);
+          console.log("Dữ liệu lấy từ màn đăng nhập", parsedValue._id);
+        }
+        // setId(value._id);
+        // console.log("Dữ liệu lấy từ màn đăng nhập", value);
+      }
+    } catch (error) {
+      console.log("Error reading value: ", error);
+    }
+  };
   // Hàm để tải lại dữ liệu từ API
   const fetchData = () => {
     axios
@@ -144,7 +167,12 @@ const TrangChu = () => {
     fetchData(); // Gọi hàm fetchData() khi component được mount lần đầu tiên
     Top_10_Dich_Vu();
     NewlyAddedDichVu();
-  }, []);
+    const unsubscribe = navigaiton.addListener("focus", () => {
+      laydlLogin();
+    });
+
+    return unsubscribe;
+  }, [navigaiton]);
 
   // Hàm xử lý sự kiện khi người dùng kích hoạt hoạt động tải lại
   const handleRefresh = () => {
@@ -173,7 +201,7 @@ const TrangChu = () => {
       >
         <Image
           source={{
-            uri: "https://th.bing.com/th/id/OIP.cttlm1zICNEvRj_evxyP3wHaLH?w=202&h=303&c=7&r=0&o=5&pid=1.7",
+            uri: dulieulogin?.anh,
           }}
           style={{
             height: 50,
@@ -279,7 +307,7 @@ const TrangChu = () => {
             <Text>Thời gian còn 12:00:00</Text>
             <FlatList
               data={dichVuList}
-numColumns={2}
+              numColumns={2}
               showsHorizontalScrollIndicator={false}
               overScrollMode="never" // Ngăn chặn hiệu ứng "bóng" khi vuốt tới cuối danh sách
               overScrollColor="transparent" // Đặt màu sắc của hiệu ứng bóng là transparent
